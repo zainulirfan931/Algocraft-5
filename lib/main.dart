@@ -189,27 +189,40 @@ class _MainShellState extends State<MainShell> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-        decoration: BoxDecoration(
-          color: const Color(0xFF070C1D),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: C.navyLine),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .45),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          child: Center(
+            heightFactor: 1,
+            child: ConstrainedBox(
+              // Samakan lebar navigasi dengan container utama (maxWidth 430).
+              constraints: const BoxConstraints(maxWidth: 430),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF070C1D),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: C.navyLine),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .45),
+                      blurRadius: 18,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    _navItem(0, Icons.home_rounded, 'Beranda'),
+                    _navItem(1, Icons.map_rounded, 'Peta'),
+                    _navItem(2, Icons.storefront_rounded, 'Toko'),
+                  ],
+                ),
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            _navItem(0, Icons.home_rounded, 'Beranda'),
-            _navItem(1, Icons.map_rounded, 'Peta'),
-            _navItem(2, Icons.storefront_rounded, 'Toko'),
-          ],
+          ),
         ),
       ),
     );
@@ -224,18 +237,21 @@ class _MainShellState extends State<MainShell> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(vertical: 9),
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          padding: const EdgeInsets.symmetric(vertical: 7),
           decoration: BoxDecoration(
             color: active ? C.cyan.withValues(alpha: .13) : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(ic, size: 22, color: active ? C.cyan : C.dim),
-              const SizedBox(height: 4),
+              Icon(ic, size: 20, color: active ? C.cyan : C.dim),
+              const SizedBox(height: 3),
               Text(
                 label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 10.5,
                   letterSpacing: .2,
