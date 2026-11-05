@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'game_audio.dart';
 import 'game_progress.dart';
@@ -493,7 +495,16 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const CustomPaint(painter: _KodiFacePainter()),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/karakter_kepala.png',
+                  fit: BoxFit.contain,
+                  width: 36,
+                  height: 36,
+                  errorBuilder: (_, _, _) =>
+                      const CustomPaint(painter: _KodiFacePainter()),
+                ),
+              ),
             ),
           ),
         ],
@@ -1594,6 +1605,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   final Set<int> _shorn = {}; // indeks domba yang sudah dicukur
   final List<List<int>> _placed = []; // papan terpasang: [row, col, material]
   String _status = 'Susun balok kode, lalu tekan Jalankan';
+  // Sprite arena diekstrak dari sheet terbaru
+  // assets/images/domba dan pohon.png: domba tampak samping kanan,
+  // pohon tampak belakang. Dipakai di semua level yang punya domba/pohon.
+  ui.Image? _karakterImage; // sprite karakter dari assets/images/karakter_depan.png
+  ui.Image? _dombaImage; // sprite domba dari assets/images/domba.png
+  ui.Image? _pohonImage; // sprite pohon dari assets/images/pohon.png
 
   MissionLevel get lv => widget.level;
 
@@ -1608,6 +1625,35 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   void initState() {
     super.initState();
     _resetRobot();
+    _loadArenaAssets();
+  }
+
+  /// Muat semua sprite arena sekali, lalu gambar lewat [_ArenaPainter].
+  Future<void> _loadArenaAssets() async {
+    final images = await Future.wait([
+      _loadAssetImage('assets/images/karakter_depan.png'),
+      _loadAssetImage('assets/images/domba.png'),
+      _loadAssetImage('assets/images/pohon.png'),
+    ]);
+    if (!mounted) return;
+    setState(() {
+      _karakterImage = images[0];
+      _dombaImage = images[1];
+      _pohonImage = images[2];
+    });
+  }
+
+  Future<ui.Image?> _loadAssetImage(String path) async {
+    try {
+      final data = await rootBundle.load(path);
+      final codec = await ui.instantiateImageCodec(
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+      final frame = await codec.getNextFrame();
+      return frame.image;
+    } catch (_) {
+      // Kalau aset gagal dimuat, arena memakai gambar bawaan.
+      return null;
+    }
   }
 
   // ── LOGIC ────────────────────────────────────────────────
@@ -2661,6 +2707,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   robotDir: _dir,
                   goalRow: lv.goalRow,
                   goalCol: lv.goalCol,
+                  karakter: _karakterImage,
+                  domba: _dombaImage,
+                  pohon: _pohonImage,
                 ),
               ),
             ),
@@ -3639,6 +3688,9 @@ class _ArenaPainter extends CustomPainter {
   final List<List<int>> placed; // papan terpasang: [row, col, material]
   final int robotRow, robotCol, robotDir;
   final int goalRow, goalCol;
+  final ui.Image? karakter; // sprite karakter pemain (null = pakai gambar bawaan)
+  final ui.Image? domba; // sprite domba (null = pakai gambar bawaan)
+  final ui.Image? pohon; // sprite pohon (null = pakai gambar bawaan)
 
   _ArenaPainter({
     required this.size,
@@ -3655,6 +3707,9 @@ class _ArenaPainter extends CustomPainter {
     required this.robotDir,
     required this.goalRow,
     required this.goalCol,
+    this.karakter,
+    this.domba,
+    this.pohon,
   });
 
   bool _placedAt(int r, int c) =>
@@ -3804,22 +3859,68 @@ class _ArenaPainter extends CustomPainter {
       final base = p + Offset(0, th * 0.06);
       switch (it.kind) {
         case _ItemKind.bush:
-          _CartoonArt.bush(canvas, base, scale * 0.72);
+          // Semak dekoratif di semua level memakai sprite pohon terbaru.
+          final bushImg = pohon;
+          if (bushImg != null) {
+            final h = scale * 0.70;
+            final w = h * bushImg.width / bushImg.height;
+            final dst = Rect.fromLTWH(
+                base.dx - w / 2, base.dy + scale * 0.14 - h, w, h);
+            canvas.drawImageRect(
+              bushImg,
+              Rect.fromLTWH(0, 0, bushImg.width.toDouble(),
+                  bushImg.height.toDouble()),
+              dst,
+              Paint()..filterQuality = FilterQuality.medium,
+            );
+          } else {
+            _CartoonArt.bush(canvas, base, scale * 0.58);
+          }
           break;
         case _ItemKind.rock:
           _CartoonArt.rock(canvas, base, scale * 0.68);
           break;
         case _ItemKind.tree:
-          _CartoonArt.tree(canvas, base, scale * 0.86);
+          final pohonImg = pohon;
+          if (pohonImg != null) {
+            final h = scale * 0.88;
+            final w = h * pohonImg.width / pohonImg.height;
+            final dst = Rect.fromLTWH(
+                base.dx - w / 2, base.dy + scale * 0.14 - h, w, h);
+            canvas.drawImageRect(
+              pohonImg,
+              Rect.fromLTWH(
+                  0, 0, pohonImg.width.toDouble(), pohonImg.height.toDouble()),
+              dst,
+              Paint()..filterQuality = FilterQuality.medium,
+            );
+          } else {
+            _CartoonArt.tree(canvas, base, scale * 0.70);
+          }
           break;
         case _ItemKind.stump:
-          _CartoonArt.stump(canvas, base, scale * 0.72);
+          _CartoonArt.stump(canvas, base, scale * 0.55);
           break;
         case _ItemKind.sheep:
-          _CartoonArt.sheep(canvas, base, scale * 0.74);
+          final dombaImg = domba;
+          if (dombaImg != null) {
+            final h = scale * 0.62;
+            final w = h * dombaImg.width / dombaImg.height;
+            final dst = Rect.fromLTWH(
+                base.dx - w / 2, base.dy + scale * 0.16 - h, w, h);
+            canvas.drawImageRect(
+              dombaImg,
+              Rect.fromLTWH(
+                  0, 0, dombaImg.width.toDouble(), dombaImg.height.toDouble()),
+              dst,
+              Paint()..filterQuality = FilterQuality.medium,
+            );
+          } else {
+            _CartoonArt.sheep(canvas, base, scale * 0.58);
+          }
           break;
         case _ItemKind.sheepShorn:
-          _CartoonArt.sheep(canvas, base, scale * 0.74, shorn: true);
+          _CartoonArt.sheep(canvas, base, scale * 0.58, shorn: true);
           break;
         case _ItemKind.plank:
           _CartoonArt.plank(canvas, base, scale * 0.9, stone: it.mat == 1);
@@ -3828,35 +3929,66 @@ class _ArenaPainter extends CustomPainter {
           // lingkaran biru + penunjuk arah
           canvas.drawCircle(
             base,
-            scale * 0.34,
+            scale * 0.30,
             Paint()..color = const Color(0xFF1E9BF0).withOpacity(0.28),
           );
           _CartoonArt.dashedCircle(
             canvas,
             base,
-            scale * 0.34,
+            scale * 0.30,
             Paint()
               ..style = PaintingStyle.stroke
-              ..strokeWidth = scale * 0.035
+              ..strokeWidth = scale * 0.028
               ..color = const Color(0xFF5FC8FF),
             dashes: 16,
           );
-          _CartoonArt.robot(canvas, base, scale * 0.78);
+          final img = karakter;
+          if (img != null) {
+            // Sprite karakter (hasil crop "Depan" dari karakter.png).
+            final h = scale * 0.78;
+            final w = h * img.width / img.height;
+            final dst = Rect.fromLTWH(
+                base.dx - w / 2, base.dy + scale * 0.16 - h, w, h);
+            canvas.drawImageRect(
+              img,
+              Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+              dst,
+              Paint()..filterQuality = FilterQuality.medium,
+            );
+          } else {
+            _CartoonArt.robot(canvas, base, scale * 0.58);
+          }
           break;
         case _ItemKind.goat:
           // lingkaran target oranye putus-putus
           _CartoonArt.dashedCircle(
             canvas,
             base,
-            scale * 0.36,
+            scale * 0.30,
             Paint()
               ..style = PaintingStyle.stroke
-              ..strokeWidth = scale * 0.045
+              ..strokeWidth = scale * 0.038
               ..color = C.orangePop,
             dashes: 14,
             duty: 0.5,
           );
-          _CartoonArt.goat(canvas, base, scale * 0.78);
+          // Sasaran kambing memakai sprite domba terbaru kalau tersedia.
+          final kambingImg = domba;
+          if (kambingImg != null) {
+            final h = scale * 0.62;
+            final w = h * kambingImg.width / kambingImg.height;
+            final dst = Rect.fromLTWH(
+                base.dx - w / 2, base.dy + scale * 0.16 - h, w, h);
+            canvas.drawImageRect(
+              kambingImg,
+              Rect.fromLTWH(0, 0, kambingImg.width.toDouble(),
+                  kambingImg.height.toDouble()),
+              dst,
+              Paint()..filterQuality = FilterQuality.medium,
+            );
+          } else {
+            _CartoonArt.goat(canvas, base, scale * 0.58);
+          }
           break;
       }
     }
@@ -3864,11 +3996,11 @@ class _ArenaPainter extends CustomPainter {
     // penunjuk arah hadap robot
     final rp = center(robotRow, robotCol) + Offset(0, th * 0.06);
     final dirVec = Offset(kDc[robotDir].toDouble(), kDr[robotDir].toDouble());
-    final tipP = rp + dirVec * (scale * 0.30);
-    final sideP = rp + dirVec * (scale * 0.14) +
-        Offset(-dirVec.dy, dirVec.dx) * (scale * 0.10);
-    final sideP2 = rp + dirVec * (scale * 0.14) -
-        Offset(-dirVec.dy, dirVec.dx) * (scale * 0.10);
+    final tipP = rp + dirVec * (scale * 0.24);
+    final sideP = rp + dirVec * (scale * 0.11) +
+        Offset(-dirVec.dy, dirVec.dx) * (scale * 0.08);
+    final sideP2 = rp + dirVec * (scale * 0.11) -
+        Offset(-dirVec.dy, dirVec.dx) * (scale * 0.08);
     canvas.drawPath(
       Path()
         ..moveTo(tipP.dx, tipP.dy)
@@ -3881,6 +4013,9 @@ class _ArenaPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ArenaPainter old) =>
+      old.karakter != karakter ||
+      old.domba != domba ||
+      old.pohon != pohon ||
       old.robotRow != robotRow ||
       old.robotCol != robotCol ||
       old.robotDir != robotDir ||
