@@ -31,6 +31,7 @@ class GameProgress {
 
   int xp = 0;
   int coins = 0;
+  int diamonds = 0;
   bool _loaded = false;
 
   /// Muat progres tersimpan. Panggil sekali dari main().
@@ -44,8 +45,10 @@ class GameProgress {
       final data = jsonDecode(raw) as Map<String, dynamic>;
       xp = (data['xp'] as num?)?.toInt() ?? 0;
       coins = (data['coins'] as num?)?.toInt() ?? 0;
+      diamonds = (data['diamonds'] as num?)?.toInt() ?? 0;
       final saved = Map<String, dynamic>.from(
-          (data['stars'] as Map?) ?? const <String, dynamic>{});
+        (data['stars'] as Map?) ?? const <String, dynamic>{},
+      );
       _stars
         ..clear()
         ..addAll({
@@ -54,8 +57,7 @@ class GameProgress {
         });
       _owned
         ..clear()
-        ..addAll(((data['owned'] as List?) ?? const [])
-            .map((e) => '$e'));
+        ..addAll(((data['owned'] as List?) ?? const []).map((e) => '$e'));
       _equipped
         ..clear()
         ..addAll({
@@ -98,8 +100,10 @@ class GameProgress {
   bool ownsItem(String id) => _owned.contains(id);
 
   /// Apakah item [id] di kategori [category] sedang dipakai?
-  bool isItemEquipped(String category, String id) =>
-      _equipped[category] == id;
+  bool isItemEquipped(String category, String id) => _equipped[category] == id;
+
+  /// Id kostum yang sedang dipakai pada [category], atau null kalau kosong.
+  String? equippedId(String category) => _equipped[category];
 
   /// Beli kostum [id] seharga [price] koin. Gagal (return false) kalau
   /// sudah dimiliki atau koin tidak cukup.
@@ -135,6 +139,7 @@ class GameProgress {
     _equipped.clear();
     xp = 0;
     coins = 0;
+    diamonds = 0;
     _loaded = false;
     changes.value++;
   }
@@ -147,6 +152,7 @@ class GameProgress {
         jsonEncode({
           'xp': xp,
           'coins': coins,
+          'diamonds': diamonds,
           'stars': {for (final e in _stars.entries) '${e.key}': e.value},
           'owned': _owned.toList(),
           'equipped': _equipped,

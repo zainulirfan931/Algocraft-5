@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 // Pemeriksa cepat level 6 & 7 (fitur place + ulangi_blok(3)/(4)).
 // Meniru mesin game: balok isi loop TIDAK dijalankan di alur utama,
 // hanya oleh balok ulangi_blok-nya.
@@ -9,8 +10,16 @@ class BuildLevel {
   final int n, sr, sc, sd, capacity, par;
   final String name;
   final List<List<int>> walls;
-  const BuildLevel(this.name, this.n, this.sr, this.sc, this.sd, this.capacity,
-      this.par, this.walls);
+  const BuildLevel(
+    this.name,
+    this.n,
+    this.sr,
+    this.sc,
+    this.sd,
+    this.capacity,
+    this.par,
+    this.walls,
+  );
 }
 
 const level6 = BuildLevel('Dinding Pertama', 5, 0, 0, 2, 5, 3, [
@@ -126,23 +135,31 @@ bool run(BuildLevel lv, List<String> prog, {bool trace = false}) {
     for (final l in log) {
       print('      $l');
     }
-    print('      papan: ${placed.length}/${lv.walls.length} unik · '
-        'robot akhir ($r,$c) · balok ${prog.length}/${lv.capacity}'
-        ' · par ${lv.par}');
+    print(
+      '      papan: ${placed.length}/${lv.walls.length} unik · '
+      'robot akhir ($r,$c) · balok ${prog.length}/${lv.capacity}'
+      ' · par ${lv.par}',
+    );
   }
   return win;
 }
 
 bool fail = false;
 
-void check(String label, BuildLevel lv, List<String> prog,
-    {bool expect = true}) {
+void check(
+  String label,
+  BuildLevel lv,
+  List<String> prog, {
+  bool expect = true,
+}) {
   final ok = run(lv, prog, trace: true);
   final fits = prog.length <= lv.capacity;
   final stars = prog.length <= lv.par;
   final good = ok == expect && (!expect || (fits && stars));
-  print('$label: ${ok ? "MENANG" : "GAGAL"} · kapasitas ${fits ? "OK" : "LEWAT"}'
-      ' · 3 bintang ${stars ? "OK" : "TIDAK"}');
+  print(
+    '$label: ${ok ? "MENANG" : "GAGAL"} · kapasitas ${fits ? "OK" : "LEWAT"}'
+    ' · 3 bintang ${stars ? "OK" : "TIDAK"}',
+  );
   if (!good) fail = true;
 }
 
@@ -152,16 +169,34 @@ void main() {
   print('\nL6 salah urutan (maju dulu) — harus gagal');
   check('L6-', level6, ['maju', 'place', 'ulang4'], expect: false);
 
-  print('\nL7 Sisa Rumah — place, maju, ulangi_blok(3), kiri, place, maju, '
-      'place, maju');
-  check('L7', level7,
-      ['place', 'maju', 'ulang3', 'kiri', 'place', 'maju', 'place', 'maju']);
+  print(
+    '\nL7 Sisa Rumah — place, maju, ulangi_blok(3), kiri, place, maju, '
+    'place, maju',
+  );
+  check('L7', level7, [
+    'place',
+    'maju',
+    'ulang3',
+    'kiri',
+    'place',
+    'maju',
+    'place',
+    'maju',
+  ]);
 
-  print('\nL7 versi loop kedua — place, maju, ulangi_blok(3), kiri, '
-      'place, maju, ulangi_blok(3)');
-  check('L7b', level7,
-      ['place', 'maju', 'ulang3', 'kiri', 'place', 'maju', 'ulang3'],
-      expect: false);
+  print(
+    '\nL7 versi loop kedua — place, maju, ulangi_blok(3), kiri, '
+    'place, maju, ulangi_blok(3)',
+  );
+  check('L7b', level7, [
+    'place',
+    'maju',
+    'ulang3',
+    'kiri',
+    'place',
+    'maju',
+    'ulang3',
+  ], expect: false);
 
   print(fail ? '\nAda masalah.' : '\nKedua level beres dan solvable.');
 }

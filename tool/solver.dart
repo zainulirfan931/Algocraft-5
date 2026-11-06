@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 // Pemeriksa apakah tiap level bisa diselesaikan dalam kapasitasnya.
 // Jalankan: dart run tool/solver.dart
 import 'dart:collection';
@@ -13,29 +14,69 @@ class Level {
   final int sr, sc, sd;
   final int gr, gc;
   final List<List<int>> rocks;
-  const Level(this.n, this.name, this.palette, this.capacity, this.sr, this.sc,
-      this.sd, this.gr, this.gc, this.rocks);
+  const Level(
+    this.n,
+    this.name,
+    this.palette,
+    this.capacity,
+    this.sr,
+    this.sc,
+    this.sd,
+    this.gr,
+    this.gc,
+    this.rocks,
+  );
   bool rock(int r, int c) => rocks.any((p) => p[0] == r && p[1] == c);
   bool inside(int r, int c) => r >= 0 && r < 4 && c >= 0 && c < 4;
 }
 
 const levels = [
   Level(1, 'Menuju Kambing', ['maju'], 2, 3, 1, 1, 3, 3, []),
-  Level(2, 'Batu / memutar', ['maju', 'kanan', 'kiri'], 8, 3, 0, 1, 3, 3,
-      [
-        [3, 1],
-        [3, 2]
-      ]),
+  Level(
+    2,
+    'Batu / memutar',
+    ['maju', 'kanan', 'kiri'],
+    8,
+    3,
+    0,
+    1,
+    3,
+    3,
+    [
+      [3, 1],
+      [3, 2],
+    ],
+  ),
   Level(3, 'Perulangan Dasar', ['maju', 'ulang'], 8, 3, 0, 1, 3, 3, []),
-  Level(4, 'Lompat Rintangan', ['maju', 'lompat', 'kanan', 'kiri'], 8, 3, 0, 1, 3, 3,
-      [
-        [3, 2]
-      ]),
-  Level(5, 'Mindset Buku', ['maju', 'ulang', 'kanan', 'kiri', 'lompat'], 8, 3, 0, 1, 3, 3,
-      [
-        [3, 1],
-        [3, 2]
-      ]),
+  Level(
+    4,
+    'Lompat Rintangan',
+    ['maju', 'lompat', 'kanan', 'kiri'],
+    8,
+    3,
+    0,
+    1,
+    3,
+    3,
+    [
+      [3, 2],
+    ],
+  ),
+  Level(
+    5,
+    'Mindset Buku',
+    ['maju', 'ulang', 'kanan', 'kiri', 'lompat'],
+    8,
+    3,
+    0,
+    1,
+    3,
+    3,
+    [
+      [3, 1],
+      [3, 2],
+    ],
+  ),
 ];
 
 class St {
@@ -119,9 +160,13 @@ void main() {
     final sol = solve(lv, lv.capacity);
     if (sol == null) {
       allOk = false;
-      print('L${lv.n} ${lv.name}: GAGAL - tidak ada solusi dalam ${lv.capacity} balok');
+      print(
+        'L${lv.n} ${lv.name}: GAGAL - tidak ada solusi dalam ${lv.capacity} balok',
+      );
     } else {
-      print('L${lv.n} ${lv.name}: ${sol.length} balok (kapasitas ${lv.capacity})');
+      print(
+        'L${lv.n} ${lv.name}: ${sol.length} balok (kapasitas ${lv.capacity})',
+      );
       print('      ${sol.join(' -> ')}');
     }
   }

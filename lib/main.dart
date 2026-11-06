@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'game_audio.dart';
 import 'game_progress.dart';
+
+part 'arena_visuals.dart';
+part 'shop_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,10 +33,10 @@ String _groupNum(int n) {
 // ============================================================
 class C {
   // Core
-  static const bg = Color(0xFFF8F6F0);        // off-white main bg
-  static const darkBg = Color(0xFF1A1A2E);    // dark charcoal outer bg
-  static const card = Color(0xFFFFFFFF);       // pure white cards
-  static const peach = Color(0xFFFFE7D1);     // peach/cream cards
+  static const bg = Color(0xFFF8F6F0); // off-white main bg
+  static const darkBg = Color(0xFF1A1A2E); // dark charcoal outer bg
+  static const card = Color(0xFFFFFFFF); // pure white cards
+  static const peach = Color(0xFFFFE7D1); // peach/cream cards
   static const peachLight = Color(0xFFFFF3E0);
 
   // Primary / Secondary
@@ -46,7 +50,7 @@ class C {
   static const goldDark = Color(0xFFC8920A);
   static const orange = Color(0xFFFFA726);
   static const red = Color(0xFFE53935);
-  static const pink = Color(0xFFFF9BC1);      // wool / domba accent
+  static const pink = Color(0xFFFF9BC1); // wool / domba accent
   static const purple = Color(0xFF7C4DFF);
 
   // Text
@@ -55,22 +59,22 @@ class C {
   static const textWhite = Color(0xFFFFFFFF);
 
   // Dark theme surfaces
-  static const outerBg = Color(0xFF08080F);      // outside the app frame
-  static const muted = Color(0xFF8FA3CC);        // secondary text on dark
-  static const dim = Color(0xFF6E82AE);          // inactive / disabled text
+  static const outerBg = Color(0xFF08080F); // outside the app frame
+  static const muted = Color(0xFF8FA3CC); // secondary text on dark
+  static const dim = Color(0xFF6E82AE); // inactive / disabled text
 
   // ── Mission Stage (dark navy theme) ──
-  static const navy = Color(0xFF0B1533);        // main dark bg
-  static const navyDeep = Color(0xFF070E24);    // deeper shade
-  static const navyCard = Color(0xFF16224A);    // panel surface
-  static const navyCard2 = Color(0xFF1E2E5C);   // raised surface
-  static const navyLine = Color(0xFF2C3E73);    // hairline / border
-  static const cyan = Color(0xFF38E1F0);        // cyan accent
+  static const navy = Color(0xFF0B1533); // main dark bg
+  static const navyDeep = Color(0xFF070E24); // deeper shade
+  static const navyCard = Color(0xFF16224A); // panel surface
+  static const navyCard2 = Color(0xFF1E2E5C); // raised surface
+  static const navyLine = Color(0xFF2C3E73); // hairline / border
+  static const cyan = Color(0xFF38E1F0); // cyan accent
   static const cyanSoft = Color(0xFF9BF0F7);
-  static const orangePop = Color(0xFFFF8A2B);   // primary action orange
+  static const orangePop = Color(0xFFFF8A2B); // primary action orange
   static const orangeDeep = Color(0xFFE96A0C);
-  static const boardTop = Color(0xFF1E3D2B);    // dark green board
-  static const boardTop2 = Color(0xFF255236);   // alternating tile
+  static const boardTop = Color(0xFF1E3D2B); // dark green board
+  static const boardTop2 = Color(0xFF255236); // alternating tile
   static const boardSide = Color(0xFF122318);
   static const boardEdge = Color(0xFF3E7A52);
 
@@ -91,16 +95,16 @@ class AlgoCraftApp extends StatelessWidget {
   const AlgoCraftApp({super.key});
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'AlgoCraft',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          scaffoldBackgroundColor: C.darkBg,
-          colorScheme: ColorScheme.fromSeed(seedColor: C.green),
-          fontFamily: 'Roboto',
-        ),
-        home: const MainShell(),
-      );
+    title: 'AlgoCraft',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      useMaterial3: true,
+      scaffoldBackgroundColor: C.darkBg,
+      colorScheme: ColorScheme.fromSeed(seedColor: C.green),
+      fontFamily: 'Roboto',
+    ),
+    home: const MainShell(),
+  );
 }
 
 // ============================================================
@@ -110,17 +114,14 @@ class DotPattern extends StatelessWidget {
   const DotPattern({super.key});
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _DotPainter(),
-      size: Size.infinite,
-    );
+    return CustomPaint(painter: _DotPainter(), size: Size.infinite);
   }
 }
 
 class _DotPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.04);
+    final paint = Paint()..color = Colors.white.withValues(alpha: .04);
     const spacing = 24.0;
     const radius = 1.2;
     for (double x = 0; x < size.width; x += spacing) {
@@ -199,8 +200,7 @@ class _MainShellState extends State<MainShell> {
               // Samakan lebar navigasi dengan container utama (maxWidth 430).
               constraints: const BoxConstraints(maxWidth: 430),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF070C1D),
                   borderRadius: BorderRadius.circular(20),
@@ -276,47 +276,57 @@ class BigButton extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
   final double? height;
-  const BigButton(this.label, this.color, this.onTap, {this.icon, this.height, super.key});
+  const BigButton(
+    this.label,
+    this.color,
+    this.onTap, {
+    this.icon,
+    this.height,
+    super.key,
+  });
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: height ?? 52,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: Color.lerp(color, Colors.black, 0.25)!,
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    onTap: onTap,
+    child: Container(
+      height: height ?? 52,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Color.lerp(color, Colors.black, 0.25)!,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          alignment: Alignment.center,
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            if (icon != null) ...[
-              Icon(icon, color: Colors.white, size: 22),
-              const SizedBox(width: 8),
-            ],
-            // Flexible + ellipsis: label panjang tetap muat walau font fallback
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                  letterSpacing: 0.3,
-                ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: Colors.white, size: 22),
+            const SizedBox(width: 8),
+          ],
+          // Flexible + ellipsis: label panjang tetap muat walau font fallback
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                letterSpacing: 0.3,
               ),
             ),
-          ]),
-        ),
-      );
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class StatChip extends StatelessWidget {
@@ -326,21 +336,28 @@ class StatChip extends StatelessWidget {
   const StatChip(this.icon, this.color, this.text, {super.key});
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: C.navyCard,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: C.navyLine),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: C.navyCard,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: C.navyLine),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 15),
+        const SizedBox(width: 5),
+        Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 12,
+            color: Colors.white,
+          ),
         ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, color: color, size: 15),
-          const SizedBox(width: 5),
-          Text(
-              text,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
-        ]),
-      );
+      ],
+    ),
+  );
 }
 
 class BlockTile extends StatelessWidget {
@@ -351,33 +368,39 @@ class BlockTile extends StatelessWidget {
   const BlockTile(this.text, this.color, this.icon, {this.onTap, super.key});
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Color.lerp(color, Colors.black, 0.15)!,
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    onTap: onTap,
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Color.lerp(color, Colors.black, 0.15)!,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-          child: Row(children: [
-            Icon(icon, color: Colors.white, size: 16),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                text,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
             ),
-          ]),
-        ),
-      );
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 // ============================================================
@@ -399,10 +422,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _startMission(BuildContext c) {
-    Navigator.push(
-      c,
-      MaterialPageRoute(builder: (_) => ChallengeScreen(level: kLevels[0])),
-    );
+    Navigator.push(c, playfulRoute(ChallengeScreen(level: kLevels[0])));
   }
 
   /// Jumlah level yang sudah selesai (dapat minimal 1 bintang).
@@ -452,7 +472,9 @@ class HomeScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [C.orangePop, C.orangeDeep]),
+              gradient: const LinearGradient(
+                colors: [C.orangePop, C.orangeDeep],
+              ),
               borderRadius: BorderRadius.circular(11),
               boxShadow: [
                 BoxShadow(
@@ -480,8 +502,11 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(width: 7),
           ValueListenableBuilder<int>(
             valueListenable: GameProgress.instance.changes,
-            builder: (_, _, _) => _pill(Icons.monetization_on_rounded, C.gold,
-                _groupNum(GameProgress.instance.coins)),
+            builder: (_, _, _) => _pill(
+              Icons.monetization_on_rounded,
+              C.gold,
+              _groupNum(GameProgress.instance.coins),
+            ),
           ),
           const Spacer(),
           ValueListenableBuilder<int>(
@@ -490,8 +515,7 @@ class HomeScreen extends StatelessWidget {
               GameAudio.instance.soundOn
                   ? Icons.volume_up_rounded
                   : Icons.volume_off_rounded,
-              () => GameAudio.instance
-                  .setSoundOn(!GameAudio.instance.soundOn),
+              () => GameAudio.instance.setSoundOn(!GameAudio.instance.soundOn),
             ),
           ),
           const SizedBox(width: 9),
@@ -599,7 +623,7 @@ class HomeScreen extends StatelessWidget {
                     colors: [
                       Color(0xFF1878D4),
                       Color(0xFF4FB8F5),
-                      Color(0xFFAEE8FF)
+                      Color(0xFFAEE8FF),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -613,7 +637,10 @@ class HomeScreen extends StatelessWidget {
               left: 16,
               top: 16,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: C.cyan,
                   borderRadius: BorderRadius.circular(20),
@@ -700,7 +727,9 @@ class HomeScreen extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [C.cyan, Color(0xFF2AA8FF)]),
+                  gradient: const LinearGradient(
+                    colors: [C.cyan, Color(0xFF2AA8FF)],
+                  ),
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
@@ -710,7 +739,11 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.terminal_rounded, color: C.navyDeep, size: 24),
+                child: const Icon(
+                  Icons.terminal_rounded,
+                  color: C.navyDeep,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -786,13 +819,12 @@ class HomeScreen extends StatelessWidget {
           widthFactor: v,
           child: Container(
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [C.cyan, Color(0xFF2AA8FF)]),
+              gradient: const LinearGradient(
+                colors: [C.cyan, Color(0xFF2AA8FF)],
+              ),
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
-                BoxShadow(
-                  color: C.cyan.withValues(alpha: .5),
-                  blurRadius: 8,
-                ),
+                BoxShadow(color: C.cyan.withValues(alpha: .5), blurRadius: 8),
               ],
             ),
           ),
@@ -822,8 +854,7 @@ class HomeScreen extends StatelessWidget {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        GameAudio.instance.setSoundOn(!audio.soundOn),
+                    onTap: () => GameAudio.instance.setSoundOn(!audio.soundOn),
                     child: Icon(
                       audio.soundOn
                           ? Icons.volume_up_rounded
@@ -880,7 +911,11 @@ class HomeScreen extends StatelessWidget {
                 color: C.cyan.withValues(alpha: .14),
                 borderRadius: BorderRadius.circular(11),
               ),
-              child: const Icon(Icons.bar_chart_rounded, color: C.cyan, size: 19),
+              child: const Icon(
+                Icons.bar_chart_rounded,
+                color: C.cyan,
+                size: 19,
+              ),
             ),
             const SizedBox(width: 10),
             const Flexible(
@@ -898,7 +933,10 @@ class HomeScreen extends StatelessWidget {
             GestureDetector(
               onTap: () => onTab(1),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: C.navyCard,
                   borderRadius: BorderRadius.circular(10),
@@ -1050,7 +1088,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: .07),
                       borderRadius: BorderRadius.circular(9),
@@ -1108,7 +1149,9 @@ class HomeScreen extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [C.cyan, Color(0xFF2AA8FF)]),
+              gradient: const LinearGradient(
+                colors: [C.cyan, Color(0xFF2AA8FF)],
+              ),
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
@@ -1118,7 +1161,11 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(Icons.emoji_events_rounded, color: C.navyDeep, size: 23),
+            child: const Icon(
+              Icons.emoji_events_rounded,
+              color: C.navyDeep,
+              size: 23,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1169,7 +1216,11 @@ class _KodiFacePainter extends CustomPainter {
     canvas.drawCircle(Offset(cx - u * .13, cy - u * .05), u * .075, glow);
     canvas.drawCircle(Offset(cx + u * .13, cy - u * .05), u * .075, glow);
     canvas.drawArc(
-      Rect.fromCenter(center: Offset(cx, cy + u * .06), width: u * .30, height: u * .20),
+      Rect.fromCenter(
+        center: Offset(cx, cy + u * .06),
+        width: u * .30,
+        height: u * .20,
+      ),
       0,
       math.pi,
       false,
@@ -1199,19 +1250,110 @@ class Cmd {
 }
 
 const kCmds = <String, Cmd>{
-  'maju': Cmd('maju', 'Gerak Maju', 'langkah: 1', 'gerak_maju()', Icons.arrow_upward_rounded, C.cyan),
-  'maju2': Cmd('maju2', 'Gerak Maju', 'langkah: 2', 'gerak_maju(2)', Icons.directions_walk_rounded, Color(0xFF7FD8FF)),
-  'lompat': Cmd('lompat', 'Lompat', 'langkah: 2', 'lompat()', Icons.trending_up_rounded, Color(0xFFB7A1FF)),
-  'kanan': Cmd('kanan', 'Belok Kanan', 'putaran: 90°', 'belok_kanan()', Icons.turn_right_rounded, Color(0xFF6EE7A8)),
-  'kiri': Cmd('kiri', 'Belok Kiri', 'putaran: 90°', 'belok_kiri()', Icons.turn_left_rounded, Color(0xFF57D98F)),
-  'ulang': Cmd('ulang', 'Ulangi', '2x lagi blok sebelumnya', 'ulangi_blok()', Icons.repeat_rounded, Color(0xFFFFD166)),
-  'ulang3': Cmd('ulang3', 'Ulangi 3x', 'jalankan 3x blok di atasnya', 'ulangi_blok(3)', Icons.repeat_rounded, Color(0xFFFFB74D)),
-  'ulang4': Cmd('ulang4', 'Ulangi 4x', 'jalankan 4x blok di atasnya', 'ulangi_blok(4)', Icons.repeat_rounded, Color(0xFFFFE082)),
-  'destroy': Cmd('destroy', 'Tebang Pohon', 'damping pohon', 'destroy()', Icons.cut_rounded, Color(0xFF8BD450)),
-  'shear': Cmd('shear', 'Cukur Domba', 'kumpulkan wool', 'shear()', Icons.content_cut_rounded, Color(0xFFFF9BC1)),
-  'place': Cmd('place', 'Letakkan Kayu', 'papan kayu', 'place("kayu")', Icons.carpenter_rounded, Color(0xFFE0A05A)),
-  'placeBatu': Cmd('placeBatu', 'Letakkan Batu', 'batu bata', 'place("batu")', Icons.foundation_rounded, Color(0xFF9FB0CC)),
-  'tunggu': Cmd('tunggu', 'Tunggu', '1 detik', 'tunggu(1)', Icons.hourglass_bottom_rounded, Color(0xFF9AA8C7)),
+  'maju': Cmd(
+    'maju',
+    'Gerak Maju',
+    'langkah: 1',
+    'gerak_maju()',
+    Icons.arrow_upward_rounded,
+    C.cyan,
+  ),
+  'maju2': Cmd(
+    'maju2',
+    'Gerak Maju',
+    'langkah: 2',
+    'gerak_maju(2)',
+    Icons.directions_walk_rounded,
+    Color(0xFF7FD8FF),
+  ),
+  'lompat': Cmd(
+    'lompat',
+    'Lompat',
+    'langkah: 2',
+    'lompat()',
+    Icons.trending_up_rounded,
+    Color(0xFFB7A1FF),
+  ),
+  'kanan': Cmd(
+    'kanan',
+    'Belok Kanan',
+    'putaran: 90°',
+    'belok_kanan()',
+    Icons.turn_right_rounded,
+    Color(0xFF6EE7A8),
+  ),
+  'kiri': Cmd(
+    'kiri',
+    'Belok Kiri',
+    'putaran: 90°',
+    'belok_kiri()',
+    Icons.turn_left_rounded,
+    Color(0xFF57D98F),
+  ),
+  'ulang': Cmd(
+    'ulang',
+    'Ulangi',
+    '2x lagi blok sebelumnya',
+    'ulangi_blok()',
+    Icons.repeat_rounded,
+    Color(0xFFFFD166),
+  ),
+  'ulang3': Cmd(
+    'ulang3',
+    'Ulangi 3x',
+    'jalankan 3x blok di atasnya',
+    'ulangi_blok(3)',
+    Icons.repeat_rounded,
+    Color(0xFFFFB74D),
+  ),
+  'ulang4': Cmd(
+    'ulang4',
+    'Ulangi 4x',
+    'jalankan 4x blok di atasnya',
+    'ulangi_blok(4)',
+    Icons.repeat_rounded,
+    Color(0xFFFFE082),
+  ),
+  'destroy': Cmd(
+    'destroy',
+    'Tebang Pohon',
+    'damping pohon',
+    'destroy()',
+    Icons.cut_rounded,
+    Color(0xFF8BD450),
+  ),
+  'shear': Cmd(
+    'shear',
+    'Cukur Domba',
+    'kumpulkan wool',
+    'shear()',
+    Icons.content_cut_rounded,
+    Color(0xFFFF9BC1),
+  ),
+  'place': Cmd(
+    'place',
+    'Letakkan Kayu',
+    'papan kayu',
+    'place("kayu")',
+    Icons.carpenter_rounded,
+    Color(0xFFE0A05A),
+  ),
+  'placeBatu': Cmd(
+    'placeBatu',
+    'Letakkan Batu',
+    'batu bata',
+    'place("batu")',
+    Icons.foundation_rounded,
+    Color(0xFF9FB0CC),
+  ),
+  'tunggu': Cmd(
+    'tunggu',
+    'Tunggu',
+    '1 detik',
+    'tunggu(1)',
+    Icons.hourglass_bottom_rounded,
+    Color(0xFF9AA8C7),
+  ),
 };
 
 /// Balok pengulang: 'ulang' mengulang 1 balok sebelumnya,
@@ -1241,12 +1383,14 @@ class MissionLevel {
   final int capacity; // maksimum jumlah blok
   final int par; // jumlah blok minimum untuk 3 bintang (0 = jarak langsung)
   final int starTarget;
-  final int boardSize; // sisi papan (default 4, level membangun bisa lebih besar)
+  final int
+  boardSize; // sisi papan (default 4, level membangun bisa lebih besar)
   final int startRow, startCol, startDir;
   final int goalRow, goalCol;
   final List<List<int>> rocks; // batu penghalang
   final List<List<int>> bushes; // dekorasi semak
-  final List<List<int>> trees; // pohon yang bisa ditebang (sasaran blok destroy)
+  final List<List<int>>
+  trees; // pohon yang bisa ditebang (sasaran blok destroy)
   final List<List<int>> sheep; // domba yang bisa dicukur (sasaran blok shear)
   final List<List<int>> walls; // petak area bangunan (sasaran blok place)
   final List<String> tips;
@@ -1327,8 +1471,7 @@ class MissionLevel {
   bool get hasCollectTarget => hasTree || hasSheep || hasBuild;
 
   /// Jarak Manhattan dari titik awal ke sasaran.
-  int get distance =>
-      (goalRow - startRow).abs() + (goalCol - startCol).abs();
+  int get distance => (goalRow - startRow).abs() + (goalCol - startCol).abs();
 
   /// Jumlah blok minimum untuk menyelesaikan level ini.
   int get parBlocks => par > 0 ? par : distance;
@@ -1345,8 +1488,7 @@ const kLevels = <MissionLevel>[
     title: 'Menuju Kambing',
     location: 'Padang Rumput',
     difficulty: 'TINGKAT MUDAH',
-    mission:
-        'Pasang 2 balok gerak_maju() agar bot sampai ke kambing di padang rumput!',
+    mission: 'Pasang 2 balok gerak_maju() agar bot sampai ke kambing di padang rumput!',
     hint:
         'Bantu bot melangkah maju mendekati kambing di padang rumput! '
         'Pasang 2 balok gerak_maju agar sampai ke sasaran.',
@@ -1362,7 +1504,11 @@ const kLevels = <MissionLevel>[
     goalRow: 3,
     goalCol: 3,
     rocks: [],
-    bushes: [[0, 0], [1, 3], [2, 1]],
+    bushes: [
+      [0, 0],
+      [1, 3],
+      [2, 1],
+    ],
     tips: [
       'Blok disusun dari atas ke bawah. Bot berjalan mengikuti urutan itu.',
       'Kapasitas level ini hanya 2 balok — sudah cukup untuk sampai.',
@@ -1376,8 +1522,7 @@ const kLevels = <MissionLevel>[
     tabTitle: 'Tebang Kayu',
     location: 'Jalan Setapak',
     difficulty: 'TINGKAT SEDANG',
-    mission:
-        'Susun beberapa perintah berurutan agar bot mengelilingi batu dan sampai ke kambing!',
+    mission: 'Susun beberapa perintah berurutan agar bot mengelilingi batu dan sampai ke kambing!',
     hint:
         'Batu besar menutup jalan lurus. Belok kiri, naik 1 petak, lalu jalan '
         'memutar ke kanan dan turun lagi untuk sampai ke kambing.',
@@ -1392,12 +1537,17 @@ const kLevels = <MissionLevel>[
     startDir: 1,
     goalRow: 3,
     goalCol: 3,
-    rocks: [[3, 1], [3, 2]],
-    bushes: [[0, 0]],
+    rocks: [
+      [3, 1],
+      [3, 2],
+    ],
+    bushes: [
+      [0, 0],
+    ],
     tips: [
       'Batu di depan menutup jalan lurus - bot harus memutar arah.',
       'Urutan solved: Belok Kiri, Gerak Maju, Belok Kanan, Gerak Maju 3x, '
-      'Belok Kanan, Gerak Maju. Total 8 balok.',
+          'Belok Kanan, Gerak Maju. Total 8 balok.',
       'Arah awal bot menghadap kanan, jadi belok pertama ke kiri.',
     ],
     reward: 60,
@@ -1427,8 +1577,13 @@ const kLevels = <MissionLevel>[
     goalRow: 3,
     goalCol: 3,
     rocks: [],
-    bushes: [[0, 2], [1, 0]],
-    trees: [[3, 3]],
+    bushes: [
+      [0, 2],
+      [1, 0],
+    ],
+    trees: [
+      [3, 3],
+    ],
     tips: [
       'Pohon tidak bisa dilalui seperti batu — harus ditebang lebih dulu.',
       'Jalan 2 petak sampai berdiri di samping pohon, lalu pakai destroy().',
@@ -1460,8 +1615,15 @@ const kLevels = <MissionLevel>[
     goalRow: 3,
     goalCol: 3,
     rocks: [],
-    bushes: [[1, 1], [2, 3], [3, 2]],
-    sheep: [[0, 1], [0, 3]],
+    bushes: [
+      [1, 1],
+      [2, 3],
+      [3, 2],
+    ],
+    sheep: [
+      [0, 1],
+      [0, 3],
+    ],
     tips: [
       'Domba tidak bisa dilalui sebelum dicukur - cukur dulu dengan shear().',
       'shear() hanya berhasil saat bot berdiri tepat di sebelah domba.',
@@ -1493,8 +1655,16 @@ const kLevels = <MissionLevel>[
     goalRow: 3,
     goalCol: 3,
     rocks: [],
-    bushes: [[0, 1], [1, 1], [2, 1]],
-    trees: [[3, 1], [3, 3], [1, 3]],
+    bushes: [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+    trees: [
+      [3, 1],
+      [3, 3],
+      [1, 3],
+    ],
     tips: [
       'Butuh 3 destroy() - satu untuk setiap pohon.',
       'Setelah pohon ditebang, petaknya kosong dan bisa dilalui.',
@@ -1532,7 +1702,11 @@ const kLevels = <MissionLevel>[
     goalRow: 4,
     goalCol: 0,
     rocks: [],
-    bushes: [[0, 3], [1, 4], [3, 3]],
+    bushes: [
+      [0, 3],
+      [1, 4],
+      [3, 3],
+    ],
     walls: [
       [1, 0],
       [2, 0],
@@ -1577,7 +1751,12 @@ const kLevels = <MissionLevel>[
     goalRow: 3,
     goalCol: 2,
     rocks: [],
-    bushes: [[0, 2], [1, 4], [4, 1], [4, 4]],
+    bushes: [
+      [0, 2],
+      [1, 4],
+      [4, 1],
+      [4, 4],
+    ],
     walls: [
       [1, 0],
       [2, 0],
@@ -1607,7 +1786,8 @@ class ChallengeScreen extends StatefulWidget {
   State<ChallengeScreen> createState() => _ChallengeScreenState();
 }
 
-class _ChallengeScreenState extends State<ChallengeScreen> {
+class _ChallengeScreenState extends State<ChallengeScreen>
+    with TickerProviderStateMixin {
   int get boardSize => lv.boardSize;
 
   final List<String> _program = [];
@@ -1621,12 +1801,51 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   final Set<int> _shorn = {}; // indeks domba yang sudah dicukur
   final List<List<int>> _placed = []; // papan terpasang: [row, col, material]
   String _status = 'Susun balok kode, lalu tekan Jalankan';
+
+  // ── WORKSPACE DRAG & DROP ─────────────────────────────────
+  // _program tetap menjadi satu-satunya sumber urutan instruksi.
+  // Key dipakai untuk menghitung posisi sisip saat blok dijatuhkan.
+  final GlobalKey _workspaceKey = GlobalKey();
+  final List<GlobalKey> _blockKeys = [];
+  bool _draggingBlock = false;
+  int? _hoverSlot;
+  Offset? _dragPointer;
   // Sprite arena diekstrak dari sheet terbaru
   // assets/images/domba dan pohon.png: domba tampak samping kanan,
   // pohon tampak belakang. Dipakai di semua level yang punya domba/pohon.
-  ui.Image? _karakterImage; // sprite karakter dari assets/images/karakter_depan.png
+  ui.Image?
+  _karakterImage; // sprite karakter dari assets/images/karakter_depan.png
   ui.Image? _dombaImage; // sprite domba dari assets/images/domba.png
   ui.Image? _pohonImage; // sprite pohon dari assets/images/pohon.png
+
+  // ── STATE VISUAL (tidak memengaruhi logika) ───────────────
+  // _actionCtrl menggerakkan satu aksi: jalan, belok, tebang, cukur,
+  // pasang papan, berhasil, atau gagal. _idleCtrl hanya untuk gerak diam.
+  // Makin besar nilainya, makin pelan animasi karakter. Semua durasi aksi
+  // (belok, maju, tebang, cukur) dikalikan dengan nilai ini di _playAction.
+  static const double _animSlowdown = 5.0;
+  // Jeda setelah tiap aksi supaya gerakan karakter tidak terasa menyambung
+  // terlalu cepat dari satu langkah ke langkah berikutnya.
+  static const Duration _postActionPause = Duration(milliseconds: 250);
+  late final AnimationController _actionCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 650),
+    value: 1,
+  );
+  late final AnimationController _idleCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2600),
+  )..repeat();
+
+  RobotPose _pose = RobotPose.idle;
+  double _fromRow = 3, _toRow = 3;
+  double _fromCol = 0, _toCol = 0;
+  double _fromDir = 1, _toDir = 1;
+  bool _robotJump = false;
+  int? _activeTree;
+  int? _activeSheep;
+  String? _activePlank;
+  int _activePlankMat = 0;
 
   MissionLevel get lv => widget.level;
 
@@ -1644,12 +1863,19 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     _loadArenaAssets();
   }
 
+  @override
+  void dispose() {
+    _actionCtrl.dispose();
+    _idleCtrl.dispose();
+    super.dispose();
+  }
+
   /// Muat semua sprite arena sekali, lalu gambar lewat [_ArenaPainter].
   Future<void> _loadArenaAssets() async {
     final images = await Future.wait([
-      _loadAssetImage('assets/images/karakter_depan.png'),
-      _loadAssetImage('assets/images/domba.png'),
-      _loadAssetImage('assets/images/pohon.png'),
+      loadUiImage('assets/images/karakter_depan.png'),
+      loadUiImage('assets/images/domba.png'),
+      loadUiImage('assets/images/pohon.png'),
     ]);
     if (!mounted) return;
     setState(() {
@@ -1657,19 +1883,6 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       _dombaImage = images[1];
       _pohonImage = images[2];
     });
-  }
-
-  Future<ui.Image?> _loadAssetImage(String path) async {
-    try {
-      final data = await rootBundle.load(path);
-      final codec = await ui.instantiateImageCodec(
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
-      final frame = await codec.getNextFrame();
-      return frame.image;
-    } catch (_) {
-      // Kalau aset gagal dimuat, arena memakai gambar bawaan.
-      return null;
-    }
   }
 
   // ── LOGIC ────────────────────────────────────────────────
@@ -1690,6 +1903,51 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     _chopped.clear();
     _shorn.clear();
     _placed.clear();
+    // Visual ikut kembali ke petak awal tanpa animasi.
+    _pose = RobotPose.idle;
+    _fromRow = _toRow = _row.toDouble();
+    _fromCol = _toCol = _col.toDouble();
+    _fromDir = _toDir = _dir.toDouble();
+    _robotJump = false;
+    _activeTree = null;
+    _activeSheep = null;
+    _activePlank = null;
+    _activePlankMat = 0;
+    _actionCtrl.value = 1;
+  }
+
+  /// Menjalankan satu animasi aksi dan menunggu sampai selesai.
+  /// Durasi menyesuaikan jenis aksi, bukan kecepatan logika.
+  Future<void> _playAction(Duration duration) async {
+    if (!mounted) return;
+    // Semua animasi aksi diperlambat agar gerakan karakter lebih mudah diikuti.
+    _actionCtrl.duration = Duration(
+      microseconds: (duration.inMicroseconds * _animSlowdown).round(),
+    );
+    try {
+      await _actionCtrl.forward(from: 0);
+    } on TickerCanceled {
+      // Layar ditutup di tengah animasi — hentikan dengan tenang.
+    }
+    if (!mounted) return;
+    await Future.delayed(_postActionPause);
+  }
+
+  /// Menyelesaikan pose setelah animasi selesai, kembali ke diam.
+  void _settleVisual({RobotPose pose = RobotPose.idle}) {
+    if (!mounted) return;
+    final nd = ((_dir % 4) + 4) % 4;
+    setState(() {
+      _fromRow = _toRow = _row.toDouble();
+      _fromCol = _toCol = _col.toDouble();
+      _fromDir = _toDir = nd.toDouble();
+      _robotJump = false;
+      _activeTree = null;
+      _activeSheep = null;
+      _activePlank = null;
+      _activePlankMat = 0;
+      _pose = pose;
+    });
   }
 
   /// Kayu terkumpul: "1/3".
@@ -1773,12 +2031,99 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     GameAudio.instance.playSfx('click');
   }
 
+  // ── DRAG & DROP BLOCK LOGIC ──────────────────────────────
+  /// Pastikan jumlah key blok selalu sama dengan jumlah instruksi.
+  void _syncBlockKeys() {
+    while (_blockKeys.length < _program.length) {
+      _blockKeys.add(GlobalKey());
+    }
+    if (_blockKeys.length > _program.length) {
+      _blockKeys.removeRange(_program.length, _blockKeys.length);
+    }
+  }
+
+  void _beginBlockDrag() {
+    if (!mounted) return;
+    setState(() {
+      _draggingBlock = true;
+      _hoverSlot = null;
+    });
+  }
+
+  void _trackBlockDrag(DragUpdateDetails details) {
+    _dragPointer = details.globalPosition;
+  }
+
+  void _endBlockDrag() {
+    if (!mounted) return;
+    setState(() {
+      _draggingBlock = false;
+      _hoverSlot = null;
+      _dragPointer = null;
+    });
+  }
+
+  /// Posisi sisip (0.._program.length) berdasarkan titik lepas blok.
+  /// Titik di atas bagian tengah sebuah blok disisipkan sebelum blok itu.
+  int _dropSlotFor(Offset globalPointer) {
+    for (var i = 0; i < _program.length && i < _blockKeys.length; i++) {
+      final box =
+          _blockKeys[i].currentContext?.findRenderObject() as RenderBox?;
+      if (box == null || !box.hasSize) continue;
+      final centerY = box.localToGlobal(Offset(0, box.size.height / 2)).dy;
+      if (globalPointer.dy < centerY) return i;
+    }
+    return _program.length;
+  }
+
+  /// Menambah blok baru atau memindahkan blok yang sudah ada ke [slot].
+  void _dropBlock(_BlockDragData data, Offset globalPointer) {
+    if (!mounted || _running) return;
+    final slot = _dropSlotFor(globalPointer);
+
+    if (data.fromIndex == null) {
+      if (_program.length >= lv.capacity) {
+        _toast('Kapasitas level ini hanya ${lv.capacity} blok');
+        return;
+      }
+      setState(() {
+        _program.insert(slot, data.id);
+        _stepIndex = 0;
+        _success = false;
+        _status = '${kCmds[data.id]!.code} ditambahkan';
+      });
+      GameAudio.instance.playSfx('click');
+      return;
+    }
+
+    final from = data.fromIndex!;
+    // Lepas tepat di posisi semula tidak mengubah apa pun.
+    if (slot == from || slot == from + 1) return;
+    setState(() {
+      final id = _program.removeAt(from);
+      var to = slot > from ? slot - 1 : slot;
+      if (to < 0) to = 0;
+      if (to > _program.length) to = _program.length;
+      _program.insert(to, id);
+      _resetRobot();
+      _stepIndex = 0;
+      _success = false;
+      _status = 'Urutan blok diperbarui';
+    });
+    GameAudio.instance.playSfx('click');
+  }
+
   Future<bool> _turn(int delta, Cmd cmd) async {
+    final from = _toDir;
     setState(() {
       _dir = (_dir + delta + 4) % 4;
       _status = cmd.code;
+      _fromDir = from;
+      _toDir = from + delta;
+      _pose = RobotPose.idle;
     });
-    await Future.delayed(const Duration(milliseconds: 220));
+    await _playAction(const Duration(milliseconds: 230));
+    _settleVisual();
     return true;
   }
 
@@ -1798,23 +2143,36 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       final onSheep = si >= 0 && !_shorn.contains(si);
       final blocked = onRock || onTree || onSheep;
       if (outOfBoard || (blocked && !(jump && !last))) {
-        setState(() => _status = onSheep
-            ? 'Domba menghalangi jalan! Cukur dulu dengan shear().'
-            : onTree
-                ? 'Pohon menghalangi jalan! Tebang dulu dengan destroy().'
-                : jump
-                    ? 'Gagal! lompat() mendarat di batu.'
-                    : 'Batu menghalangi jalan!');
-        await Future.delayed(const Duration(milliseconds: 420));
+        setState(() {
+          _status = onSheep
+              ? 'Domba menghalangi jalan! Cukur dulu dengan shear().'
+              : onTree
+              ? 'Pohon menghalangi jalan! Tebang dulu dengan destroy().'
+              : jump
+              ? 'Gagal! lompat() mendarat di batu.'
+              : 'Batu menghalangi jalan!';
+          _robotJump = false;
+          _pose = RobotPose.sad;
+        });
+        await _playAction(const Duration(milliseconds: 420));
+        _settleVisual();
         return false;
       }
+      final oldR = _row, oldC = _col;
       setState(() {
         _row = nr;
         _col = nc;
         _moves++;
         _status = '${cmd.code} · ${cmd.sub}';
+        _fromRow = oldR.toDouble();
+        _fromCol = oldC.toDouble();
+        _toRow = nr.toDouble();
+        _toCol = nc.toDouble();
+        _robotJump = jump;
+        _pose = jump ? RobotPose.jump : RobotPose.walk;
       });
-      await Future.delayed(Duration(milliseconds: jump ? 300 : 340));
+      await _playAction(Duration(milliseconds: jump ? 360 : 330));
+      _settleVisual();
     }
     return true;
   }
@@ -1823,13 +2181,18 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   /// kalau ada beberapa pohon, panggil destroy() berulang kali.
   Future<bool> _destroy(Cmd cmd) async {
     if (!lv.hasTree) {
-      setState(() => _status = 'Level ini tidak punya pohon untuk ditebang');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Level ini tidak punya pohon untuk ditebang';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 380));
+      _settleVisual();
       return false;
     }
     if (_woodCount >= _woodTotal) {
       setState(() => _status = '${cmd.code} · Semua pohon sudah ditebang');
-      await Future.delayed(const Duration(milliseconds: 260));
+      await _playAction(const Duration(milliseconds: 220));
+      _settleVisual();
       return true;
     }
     int? target;
@@ -1841,17 +2204,30 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       }
     }
     if (target == null) {
-      setState(() => _status = 'Gagal! destroy() butuh bot di samping pohon');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Gagal! destroy() butuh bot di samping pohon';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 420));
+      _settleVisual();
       return false;
     }
     // variabel final supaya bisa dibaca di dalam closure setState
     final cut = target;
     setState(() {
+      _activeTree = cut;
+      _pose = RobotPose.chop;
+      _status = '${cmd.code} · Menebang pohon...';
+    });
+    await _playAction(const Duration(milliseconds: 620));
+    if (!mounted) return false;
+    setState(() {
       _chopped.add(cut);
       _status = '${cmd.code} · Kayu $_woodCount/$_woodTotal terkumpul!';
+      _activeTree = null;
+      _pose = RobotPose.idle;
     });
-    await Future.delayed(const Duration(milliseconds: 750));
+    _settleVisual();
     return true;
   }
 
@@ -1866,13 +2242,18 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   /// Mencukur domba di petak sebelah bot dan mengoleksi wool-nya.
   Future<bool> _shear(Cmd cmd) async {
     if (!lv.hasSheep) {
-      setState(() => _status = 'Level ini tidak punya domba untuk dicukur');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Level ini tidak punya domba untuk dicukur';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 380));
+      _settleVisual();
       return false;
     }
     if (_woolCount >= _woolTotal) {
       setState(() => _status = '${cmd.code} · Semua domba sudah dicukur');
-      await Future.delayed(const Duration(milliseconds: 260));
+      await _playAction(const Duration(milliseconds: 220));
+      _settleVisual();
       return true;
     }
     int? target;
@@ -1884,17 +2265,30 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       }
     }
     if (target == null) {
-      setState(() => _status = 'Gagal! shear() butuh bot di samping domba');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Gagal! shear() butuh bot di samping domba';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 420));
+      _settleVisual();
       return false;
     }
     // variabel final supaya bisa dibaca di dalam closure setState
     final shorn = target;
     setState(() {
+      _activeSheep = shorn;
+      _pose = RobotPose.shear;
+      _status = '${cmd.code} · Mencukur domba...';
+    });
+    await _playAction(const Duration(milliseconds: 620));
+    if (!mounted) return false;
+    setState(() {
       _shorn.add(shorn);
       _status = '${cmd.code} · Wool $_woolCount/$_woolTotal terkumpul!';
+      _activeSheep = null;
+      _pose = RobotPose.idle;
     });
-    await Future.delayed(const Duration(milliseconds: 650));
+    _settleVisual();
     return true;
   }
 
@@ -1903,42 +2297,68 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   /// jadi bot tetap bisa melangkah ke petak yang baru dipasang.
   Future<bool> _place(int mat, Cmd cmd) async {
     if (!lv.hasBuild) {
-      setState(() => _status = 'Level ini tidak punya area bangunan');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Level ini tidak punya area bangunan';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 380));
+      _settleVisual();
       return false;
     }
     final fr = _row + kDr[_dir];
     final fc = _col + kDc[_dir];
     if (!_inside(fr, fc)) {
-      setState(
-          () => _status = 'Gagal! ${cmd.code} - tidak ada petak di depan bot');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Gagal! ${cmd.code} - tidak ada petak di depan bot';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 380));
+      _settleVisual();
       return false;
     }
     if (lv.wallIndexAt(fr, fc) < 0) {
-      setState(() => _status =
-          'Gagal! ${cmd.code} harus di petak area bangunan (garis oranye)');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status =
+            'Gagal! ${cmd.code} harus di petak area bangunan (garis oranye)';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 380));
+      _settleVisual();
       return false;
     }
     if (lv.rockAt(fr, fc) ||
         lv.treeAt(fr, fc) ||
         lv.sheepIndexAt(fr, fc) >= 0) {
-      setState(() => _status = 'Petak di depan bot masih terisi objek lain');
-      await Future.delayed(const Duration(milliseconds: 420));
+      setState(() {
+        _status = 'Petak di depan bot masih terisi objek lain';
+        _pose = RobotPose.sad;
+      });
+      await _playAction(const Duration(milliseconds: 380));
+      _settleVisual();
       return false;
     }
     if (_placedIndexAt(fr, fc) >= 0) {
       setState(() => _status = '${cmd.code} · Petak itu sudah terpasang papan');
-      await Future.delayed(const Duration(milliseconds: 260));
+      await _playAction(const Duration(milliseconds: 200));
+      _settleVisual();
       return true;
     }
     setState(() {
-      _placed.add([fr, fc, mat]);
-      _status = '${cmd.code} · Papan $_wallDone/${lv.buildTotal} terpasang!';
+      _activePlank = '$fr,$fc';
+      _activePlankMat = mat;
+      _pose = RobotPose.build;
+      _status = '${cmd.code} · Memasang papan...';
     });
     GameAudio.instance.playSfx('place');
-    await Future.delayed(const Duration(milliseconds: 650));
+    await _playAction(const Duration(milliseconds: 520));
+    if (!mounted) return false;
+    setState(() {
+      _placed.add([fr, fc, mat]);
+      _activePlank = null;
+      _pose = RobotPose.idle;
+      _status = '${cmd.code} · Papan $_wallDone/${lv.buildTotal} terpasang!';
+    });
+    _settleVisual();
     return true;
   }
 
@@ -1997,8 +2417,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   Future<bool> _execRepeat(int at) async {
     final id = _program[at];
     if (at == 0) {
-      setState(() =>
-          _status = '${kCmds[id]!.code} harus dipakai setelah balok lain');
+      setState(
+        () => _status = '${kCmds[id]!.code} harus dipakai setelah balok lain',
+      );
       await Future.delayed(const Duration(milliseconds: 420));
       return false;
     }
@@ -2013,8 +2434,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     final start = _groupStart(at);
     final times = _repeatTimes(id);
     if (start >= at) {
-      setState(() =>
-          _status = '${kCmds[id]!.code} harus punya balok di atasnya');
+      setState(
+        () => _status = '${kCmds[id]!.code} harus punya balok di atasnya',
+      );
       await Future.delayed(const Duration(milliseconds: 420));
       return false;
     }
@@ -2037,26 +2459,28 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   Future<void> _finish(bool ok) async {
     // Level berpohon menang lewat penebangan, level berdomba menang lewat
     // wool lengkap, level biasa menang lewat petak sasaran.
-    final win = ok &&
+    final win =
+        ok &&
         (lv.hasBuild
             ? _buildDone
             : lv.hasSheep
-                ? _woolCount >= _woolTotal
-                : lv.hasTree
-                    ? _woodCount >= _woodTotal
-                    : (_row == lv.goalRow && _col == lv.goalCol));
+            ? _woolCount >= _woolTotal
+            : lv.hasTree
+            ? _woodCount >= _woodTotal
+            : (_row == lv.goalRow && _col == lv.goalCol));
     setState(() {
       _running = false;
       _success = win;
+      _pose = win ? RobotPose.happy : RobotPose.sad;
       _status = win
           ? 'Misi berhasil! Kamu raih $_starsUsed bintang.'
           : lv.hasBuild
-              ? 'Kode selesai, papan baru $_wallDone/${lv.buildTotal}.'
-              : lv.hasSheep
-                  ? 'Kode selesai, wool baru $_woolCount/$_woolTotal.'
-                  : lv.hasTree
-                      ? 'Kode selesai, kayu baru $_woodCount/$_woodTotal.'
-                      : 'Kode selesai, kambing belum tercapai.';
+          ? 'Kode selesai, papan baru $_wallDone/${lv.buildTotal}.'
+          : lv.hasSheep
+          ? 'Kode selesai, wool baru $_woolCount/$_woolTotal.'
+          : lv.hasTree
+          ? 'Kode selesai, kayu baru $_woodCount/$_woodTotal.'
+          : 'Kode selesai, kambing belum tercapai.';
     });
     if (win) {
       await GameProgress.instance.recordWin(
@@ -2066,15 +2490,18 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         coinGain: lv.reward ~/ 10,
       );
       GameAudio.instance.playSfx('win');
-      await Future.delayed(const Duration(milliseconds: 700));
+      // Pose berhasil sempat terlihat sebelum layar hasil dibuka.
+      await _playAction(const Duration(milliseconds: 650));
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (_) => LevelCompleteScreen(level: lv, stars: _starsUsed)),
+        playfulRoute(LevelCompleteScreen(level: lv, stars: _starsUsed)),
       );
     } else {
       GameAudio.instance.playSfx('fail');
+      await _playAction(const Duration(milliseconds: 520));
+      if (!mounted) return;
+      _settleVisual(pose: RobotPose.sad);
     }
   }
 
@@ -2125,8 +2552,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       skipped++;
     }
     if (skipped > 0) {
-      setState(() =>
-          _status = 'Balok isi perulangan dijalankan oleh ulangi_blok');
+      setState(
+        () => _status = 'Balok isi perulangan dijalankan oleh ulangi_blok',
+      );
     }
     if (_stepIndex >= _program.length) {
       _toast('Semua balok sudah dijalankan. Tekan Atur Ulang.');
@@ -2147,7 +2575,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     setState(() {
       _running = false;
       _success = false;
-      _status = 'Balok $_stepIndex/${_program.length} selesai. Tekan Langkah lagi.';
+      _status =
+          'Balok $_stepIndex/${_program.length} selesai. Tekan Langkah lagi.';
     });
   }
 
@@ -2207,17 +2636,17 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   }
 
   BoxDecoration _panel(Color c, {double r = 18}) => BoxDecoration(
-        color: c,
-        borderRadius: BorderRadius.circular(r),
-        border: Border.all(color: Colors.white.withValues(alpha: .07)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .30),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      );
+    color: c,
+    borderRadius: BorderRadius.circular(r),
+    border: Border.all(color: Colors.white.withValues(alpha: .07)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: .30),
+        blurRadius: 16,
+        offset: const Offset(0, 6),
+      ),
+    ],
+  );
 
   Widget _roundBtn(IconData ic, VoidCallback onTap, {Color? tint}) {
     return GestureDetector(
@@ -2248,9 +2677,14 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [C.orangePop, Color(0xFFFFB061)]),
+                    gradient: const LinearGradient(
+                      colors: [C.orangePop, Color(0xFFFFB061)],
+                    ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -2277,7 +2711,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               ],
             ),
           ),
-          _roundBtn(Icons.star_rounded, () => _toast('Target: ${lv.starTarget} bintang'), tint: C.gold),
+          _roundBtn(
+            Icons.star_rounded,
+            () => _toast('Target: ${lv.starTarget} bintang'),
+            tint: C.gold,
+          ),
           const SizedBox(width: 6),
           ValueListenableBuilder<int>(
             valueListenable: GameAudio.instance.changes,
@@ -2285,12 +2723,14 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               GameAudio.instance.soundOn
                   ? Icons.volume_up_rounded
                   : Icons.volume_off_rounded,
-              () => GameAudio.instance
-                  .setSoundOn(!GameAudio.instance.soundOn),
+              () => GameAudio.instance.setSoundOn(!GameAudio.instance.soundOn),
             ),
           ),
           const SizedBox(width: 6),
-          _roundBtn(Icons.more_horiz_rounded, () => _toast('Pilihan belum tersedia')),
+          _roundBtn(
+            Icons.more_horiz_rounded,
+            () => _toast('Pilihan belum tersedia'),
+          ),
         ],
       ),
     );
@@ -2304,9 +2744,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         Expanded(child: _lvTab(lv, true)),
         const SizedBox(width: 8),
         Expanded(
-          child: next == null
-              ? _lvTab(null, false)
-              : _lvTab(next, false),
+          child: next == null ? _lvTab(null, false) : _lvTab(next, false),
         ),
       ],
     );
@@ -2332,7 +2770,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         }
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => ChallengeScreen(level: l)),
+          playfulRoute(ChallengeScreen(level: l)),
         );
       },
       child: Container(
@@ -2379,22 +2817,31 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       decoration: _panel(C.navyCard, r: 16),
       child: Row(
         children: [
-          Expanded(child: _infoCol(lv.difficulty, C.green, Icons.verified_rounded)),
+          Expanded(
+            child: _infoCol(lv.difficulty, C.green, Icons.verified_rounded),
+          ),
           _vLine(),
           Expanded(child: _starCol()),
           _vLine(),
-          Expanded(child: _infoCol('${_program.length} / ${lv.capacity}', C.cyan, Icons.inventory_2_rounded, cap: 'KAPASITAS')),
+          Expanded(
+            child: _infoCol(
+              '${_program.length} / ${lv.capacity}',
+              C.cyan,
+              Icons.inventory_2_rounded,
+              cap: 'KAPASITAS',
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _vLine() => Container(
-        width: 1,
-        height: 30,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        color: C.navyLine,
-      );
+    width: 1,
+    height: 30,
+    margin: const EdgeInsets.symmetric(horizontal: 8),
+    color: C.navyLine,
+  );
 
   Widget _infoCol(String value, Color col, IconData ic, {String? cap}) {
     return Column(
@@ -2497,7 +2944,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [C.cyan, Color(0xFF2AA8FF)]),
+              gradient: const LinearGradient(
+                colors: [C.cyan, Color(0xFF2AA8FF)],
+              ),
               borderRadius: BorderRadius.circular(13),
               boxShadow: [
                 BoxShadow(
@@ -2559,7 +3008,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [Color(0xFF5AB4FF), C.blueDark]),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF5AB4FF), C.blueDark],
+              ),
               borderRadius: BorderRadius.circular(13),
               boxShadow: [
                 BoxShadow(
@@ -2569,7 +3020,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                 ),
               ],
             ),
-            child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 22),
+            child: const Icon(
+              Icons.smart_toy_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -2632,6 +3087,13 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 
   // ── ARENA ──
   Widget _arena() {
+    final theme = BoardTheme.of(lv.location);
+    final hat = equippedCostume(CostumeCategory.topi);
+    final shirt = equippedCostume(CostumeCategory.baju);
+    final shoes = equippedCostume(CostumeCategory.sepatu);
+    final scarf = equippedCostume(CostumeCategory.syal);
+    final wings = equippedCostume(CostumeCategory.sayap);
+    final accessory = equippedCostume(CostumeCategory.aksesoris);
     return Container(
       width: double.infinity,
       decoration: _panel(C.navyCard, r: 20),
@@ -2648,7 +3110,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                     color: C.cyan,
                     borderRadius: BorderRadius.circular(2),
                     boxShadow: [
-                      BoxShadow(color: C.cyan.withValues(alpha: .6), blurRadius: 6),
+                      BoxShadow(
+                        color: C.cyan.withValues(alpha: .6),
+                        blurRadius: 6,
+                      ),
                     ],
                   ),
                 ),
@@ -2669,18 +3134,27 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                 ),
                 const Spacer(),
                 if (lv.hasBuild) ...[
-                  _countChip(Icons.carpenter_rounded, const Color(0xFFE0A05A),
-                      'Papan $_wallDone/${lv.buildTotal}'),
+                  _countChip(
+                    Icons.carpenter_rounded,
+                    const Color(0xFFE0A05A),
+                    'Papan $_wallDone/${lv.buildTotal}',
+                  ),
                   const SizedBox(width: 6),
                 ],
                 if (lv.hasTree) ...[
-                  _countChip(Icons.forest_rounded, C.green,
-                      'Kayu $_woodCount/$_woodTotal'),
+                  _countChip(
+                    Icons.forest_rounded,
+                    C.green,
+                    'Kayu $_woodCount/$_woodTotal',
+                  ),
                   const SizedBox(width: 6),
                 ],
                 if (lv.hasSheep) ...[
-                  _countChip(Icons.emoji_nature_rounded, C.pink,
-                      'Wool $_woolCount/$_woolTotal'),
+                  _countChip(
+                    Icons.emoji_nature_rounded,
+                    C.pink,
+                    'Wool $_woolCount/$_woolTotal',
+                  ),
                   const SizedBox(width: 6),
                 ],
                 Text(
@@ -2698,34 +3172,65 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             height: 196,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(6, 0, 6, 2),
-              child: CustomPaint(
-                size: Size.infinite,
-                painter: _ArenaPainter(
-                  size: boardSize,
-                  rocks: lv.rocks,
-                  bushes: lv.bushes,
-                  trees: lv.trees,
-                  treesChopped: [
-                    for (var i = 0; i < lv.trees.length; i++)
-                      _chopped.contains(i)
-                  ],
-                  sheep: lv.sheep,
-                  sheepShorn: [
-                    for (var i = 0; i < lv.sheep.length; i++)
-                      _shorn.contains(i)
-                  ],
-                  walls: lv.walls,
-                  placed: [
-                    for (final p in _placed) [p[0], p[1], p[2]],
-                  ],
-                  robotRow: _row,
-                  robotCol: _col,
-                  robotDir: _dir,
-                  goalRow: lv.goalRow,
-                  goalCol: lv.goalCol,
-                  karakter: _karakterImage,
-                  domba: _dombaImage,
-                  pohon: _pohonImage,
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: Listenable.merge([_actionCtrl, _idleCtrl]),
+                  builder: (context, _) {
+                    final moved = Curves.easeInOutCubic.transform(
+                      _actionCtrl.value,
+                    );
+                    final turned = Curves.easeOutCubic.transform(
+                      _actionCtrl.value,
+                    );
+                    final row = _fromRow + (_toRow - _fromRow) * moved;
+                    final col = _fromCol + (_toCol - _fromCol) * moved;
+                    final dir = _fromDir + (_toDir - _fromDir) * turned;
+                    return CustomPaint(
+                      size: Size.infinite,
+                      painter: _ArenaPainter(
+                        size: boardSize,
+                        rocks: lv.rocks,
+                        bushes: lv.bushes,
+                        trees: lv.trees,
+                        treesChopped: [
+                          for (var i = 0; i < lv.trees.length; i++)
+                            _chopped.contains(i),
+                        ],
+                        sheep: lv.sheep,
+                        sheepShorn: [
+                          for (var i = 0; i < lv.sheep.length; i++)
+                            _shorn.contains(i),
+                        ],
+                        walls: lv.walls,
+                        placed: [
+                          for (final p in _placed) [p[0], p[1], p[2]],
+                        ],
+                        robotRow: row,
+                        robotCol: col,
+                        robotDir: dir,
+                        goalRow: lv.goalRow,
+                        goalCol: lv.goalCol,
+                        karakter: _karakterImage,
+                        domba: _dombaImage,
+                        pohon: _pohonImage,
+                        theme: theme,
+                        pose: _pose,
+                        poseT: _actionCtrl.value,
+                        idleT: _idleCtrl.value,
+                        jump: _robotJump,
+                        activeTree: _activeTree,
+                        activeSheep: _activeSheep,
+                        activePlank: _activePlank,
+                        activePlankMat: _activePlankMat,
+                        hat: hat,
+                        shirt: shirt,
+                        shoes: shoes,
+                        scarf: scarf,
+                        wings: wings,
+                        accessory: accessory,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -2740,7 +3245,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   : C.navyDeep.withValues(alpha: .65),
               borderRadius: BorderRadius.circular(11),
               border: Border.all(
-                color: _success ? C.green.withValues(alpha: .6) : Colors.transparent,
+                color: _success
+                    ? C.green.withValues(alpha: .6)
+                    : Colors.transparent,
               ),
             ),
             child: Column(
@@ -2764,17 +3271,24 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    Icon(Icons.arrow_forward_rounded,
-                        size: 12, color: C.dim.withValues(alpha: .8)),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 12,
+                      color: C.dim.withValues(alpha: .8),
+                    ),
                     const SizedBox(width: 6),
-                    Text(
-                      lv.hasBuild
-                          ? 'Papan: $_wallDone/${lv.buildTotal}'
-                          : 'Target X:${lv.goalCol}, Y:${lv.goalRow}',
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w900,
-                        color: C.orangePop,
+                    Expanded(
+                      child: Text(
+                        lv.hasBuild
+                            ? 'Papan: $_wallDone/${lv.buildTotal}'
+                            : 'Target X:${lv.goalCol}, Y:${lv.goalRow}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w900,
+                          color: C.orangePop,
+                        ),
                       ),
                     ),
                   ],
@@ -2811,7 +3325,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               decoration: BoxDecoration(
                 gradient: _running
                     ? const LinearGradient(
-                        colors: [Color(0xFF6B4A2A), Color(0xFF54381F)])
+                        colors: [Color(0xFF6B4A2A), Color(0xFF54381F)],
+                      )
                     : const LinearGradient(colors: [C.orangePop, C.orangeDeep]),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
@@ -2822,25 +3337,34 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    _running ? Icons.hourglass_top_rounded : Icons.play_arrow_rounded,
-                    size: 22,
-                    color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _running
+                            ? Icons.hourglass_top_rounded
+                            : Icons.play_arrow_rounded,
+                        size: 22,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 7),
+                      Text(
+                        _running ? 'MENJALANKAN' : 'JALANKAN',
+                        maxLines: 1,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: .5,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 7),
-                  Text(
-                    _running ? 'MENJALANKAN' : 'JALANKAN',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: .5,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -2853,8 +3377,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     );
   }
 
-  Widget _sideBtn(IconData ic, String label, VoidCallback onTap,
-      {bool square = false}) {
+  Widget _sideBtn(
+    IconData ic,
+    String label,
+    VoidCallback onTap, {
+    bool square = false,
+  }) {
     return GestureDetector(
       onTap: _running && label.isEmpty ? null : onTap,
       child: Container(
@@ -2898,7 +3426,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       ),
       child: Row(
         children: [
-          _tabChip(0, 'Area Kode (${_program.length} Blok)', Icons.extension_rounded),
+          _tabChip(
+            0,
+            'Area Kode (${_program.length} Blok)',
+            Icons.extension_rounded,
+          ),
           const SizedBox(width: 6),
           _tabChip(1, 'Pratinjau Teks', Icons.terminal_rounded),
         ],
@@ -2922,7 +3454,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(ic, size: 13, color: active ? C.navyDeep : const Color(0xFF8FA3CC)),
+              Icon(
+                ic,
+                size: 13,
+                color: active ? C.navyDeep : const Color(0xFF8FA3CC),
+              ),
               const SizedBox(width: 5),
               Flexible(
                 child: Text(
@@ -2954,123 +3490,189 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   }
 
   Widget _executionArea() {
+    _syncBlockKeys();
+    final feedbackWidth = math.min(
+      340.0,
+      MediaQuery.sizeOf(context).width - 52,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Urutan Kode',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Text(
+              'Urutan Kode',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '${_program.length} / ${lv.capacity} balok',
+              style: const TextStyle(fontSize: 9.5, color: C.dim),
+            ),
+          ],
         ),
         const SizedBox(height: 3),
-        Text(
-          '${_program.length} / ${lv.capacity} balok',
-          style: const TextStyle(fontSize: 9.5, color: C.dim),
+        const Text(
+          'Seret blok ke bawah blok mulai. Ketuk palet untuk menambah cepat.',
+          style: TextStyle(fontSize: 9.5, color: C.dim, height: 1.3),
         ),
         const SizedBox(height: 9),
-        _codeBlock(
-          color: C.orangePop,
-          icon: Icons.play_arrow_rounded,
-          code: 'ketika_dijalankan()',
-          sub: 'mulai program',
+        DragTarget<_BlockDragData>(
+          onWillAcceptWithDetails: (_) => !_running,
+          onMove: (details) {
+            final pointer = _dragPointer ?? details.offset;
+            final slot = _dropSlotFor(pointer);
+            if (_hoverSlot != slot) {
+              setState(() => _hoverSlot = slot);
+            }
+          },
+          onLeave: (_) {
+            if (_hoverSlot != null) setState(() => _hoverSlot = null);
+          },
+          onAcceptWithDetails: (details) =>
+              _dropBlock(details.data, _dragPointer ?? details.offset),
+          builder: (context, candidate, rejected) {
+            final active = candidate.isNotEmpty && !_running;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 160),
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
+              decoration: BoxDecoration(
+                color: C.navyDeep.withValues(alpha: .48),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: active ? C.cyan : C.navyLine,
+                  width: active ? 1.6 : 1,
+                ),
+                boxShadow: active
+                    ? [
+                        BoxShadow(
+                          color: C.cyan.withValues(alpha: .25),
+                          blurRadius: 14,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Column(
+                key: _workspaceKey,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _PuzzleBlock(
+                    color: C.orangePop,
+                    icon: Icons.play_arrow_rounded,
+                    code: 'ketika_dijalankan()',
+                    sub: 'mulai program',
+                    isStart: true,
+                  ),
+                  if (_program.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: _emptyWorkspace(active),
+                    )
+                  else ...[
+                    for (var i = 0; i < _program.length; i++)
+                      _workspaceBlock(i, feedbackWidth),
+                    if (_draggingBlock && _hoverSlot == _program.length)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: _dropIndicator(),
+                      ),
+                  ],
+                ],
+              ),
+            );
+          },
         ),
-        const SizedBox(height: 6),
-        if (_program.isEmpty)
-          Container(
-            width: double.infinity,
-            height: 58,
-            decoration: BoxDecoration(
-              color: C.navyDeep.withValues(alpha: .5),
-              borderRadius: BorderRadius.circular(11),
-              border: Border.all(color: C.navyLine),
-            ),
-            child: const Center(
-              child: Text(
-                'Ketuk atau seret balok ke sini',
-                style: TextStyle(fontSize: 10.5, color: C.dim),
-              ),
-            ),
-          )
-        else
-          for (var i = 0; i < _program.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: _codeBlock(
-                color: kCmds[_program[i]]!.color,
-                icon: kCmds[_program[i]]!.icon,
-                code: kCmds[_program[i]]!.code,
-                sub: kCmds[_program[i]]!.sub,
-                onDelete: () => _removeBlock(i),
-                running: _running && _stepIndex == i,
-              ),
-            ),
       ],
     );
   }
 
-  Widget _codeBlock({
-    required Color color,
-    required IconData icon,
-    required String code,
-    String? sub,
-    VoidCallback? onDelete,
-    bool running = false,
-  }) {
+  Widget _workspaceBlock(int i, double feedbackWidth) {
+    final cmd = kCmds[_program[i]]!;
+    final block = _PuzzleBlock(
+      color: cmd.color,
+      icon: cmd.icon,
+      code: cmd.code,
+      sub: cmd.sub,
+      onDelete: () => _removeBlock(i),
+      running: _running && _stepIndex == i,
+    );
+    final feedbackBlock = _PuzzleBlock(
+      color: cmd.color,
+      icon: cmd.icon,
+      code: cmd.code,
+      sub: cmd.sub,
+    );
+    return SizedBox(
+      key: _blockKeys[i],
+      child: Draggable<_BlockDragData>(
+        data: _BlockDragData(_program[i], fromIndex: i),
+        maxSimultaneousDrags: _running ? 0 : 1,
+        onDragStarted: _beginBlockDrag,
+        onDragUpdate: _trackBlockDrag,
+        onDragEnd: (_) => _endBlockDrag(),
+        feedback: Material(
+          type: MaterialType.transparency,
+          child: SizedBox(width: feedbackWidth, child: feedbackBlock),
+        ),
+        childWhenDragging: Opacity(opacity: .35, child: block),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            block,
+            if (_draggingBlock && _hoverSlot == i)
+              Positioned(
+                left: 4,
+                right: 4,
+                top: -3,
+                child: _dropIndicator(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _dropIndicator() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      height: 3,
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(11),
-        border: running ? Border.all(color: Colors.white, width: 2) : null,
+        color: C.cyan,
+        borderRadius: BorderRadius.circular(2),
         boxShadow: [
-          BoxShadow(
-            color: Color.lerp(color, Colors.black, .35)!.withValues(alpha: .45),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: C.cyan.withValues(alpha: .75), blurRadius: 8),
         ],
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: C.navyDeep, size: 15),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  code,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: C.navyDeep,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 12,
-                    fontFamily: 'monospace',
-                  ),
-                ),
-                if (sub != null)
-                  Text(
-                    sub,
-                    style: const TextStyle(
-                      color: Color(0x66212B44),
-                      fontWeight: FontWeight.w800,
-                      fontSize: 9,
-                    ),
-                  ),
-              ],
-            ),
+    );
+  }
+
+  Widget _emptyWorkspace(bool active) {
+    return Container(
+      height: 66,
+      decoration: BoxDecoration(
+        color: active
+            ? C.cyan.withValues(alpha: .08)
+            : C.navyDeep.withValues(alpha: .4),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(
+          color: active ? C.cyan : C.navyLine,
+          width: active ? 1.6 : 1,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          active ? 'Lepaskan blok di sini' : 'Seret blok ke area ini',
+          style: TextStyle(
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+            color: active ? C.cyan : C.dim,
           ),
-          if (onDelete != null)
-            GestureDetector(
-              onTap: onDelete,
-              child: const Icon(Icons.close_rounded,
-                  color: Color(0x99212B44), size: 15),
-            ),
-        ],
+        ),
       ),
     );
   }
@@ -3124,6 +3726,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 
   // ── PALET BLOK ──
   Widget _palette() {
+    final feedbackWidth = math.min(
+      340.0,
+      MediaQuery.sizeOf(context).width - 52,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -3136,53 +3742,63 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             letterSpacing: .9,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 3),
+        const Text(
+          'Seret blok ke Area Kode, atau ketuk untuk menambah di urutan akhir.',
+          style: TextStyle(fontSize: 9.5, color: C.dim, height: 1.3),
+        ),
+        const SizedBox(height: 9),
         Wrap(
           spacing: 7,
           runSpacing: 7,
           children: [
             for (final id in kCmds.keys)
-              if (lv.palette.contains(id))
-                _paletteBlock(id, true)
-              else
-                _paletteBlock(id, false),
+              _paletteBlock(id, lv.palette.contains(id), feedbackWidth),
           ],
         ),
       ],
     );
   }
 
-  Widget _paletteBlock(String id, bool enabled) {
+  Widget _paletteBlock(String id, bool enabled, double feedbackWidth) {
     final cmd = kCmds[id]!;
-    final col = enabled ? cmd.color : C.dim;
-    return GestureDetector(
-      onTap: enabled ? () => _addBlock(id) : () => _toast('Balok ini belum dibuka di level ${lv.number}'),
-      child: Opacity(
-        opacity: enabled ? 1 : .5,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: col.withValues(alpha: enabled ? .16 : .07),
-            borderRadius: BorderRadius.circular(11),
-            border: Border.all(color: col.withValues(alpha: enabled ? .6 : .3)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(enabled ? cmd.icon : Icons.lock_rounded, size: 12, color: col),
-              const SizedBox(width: 6),
-              Text(
-                cmd.code,
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w900,
-                  color: col,
-                ),
-              ),
-            ],
-          ),
-        ),
+    final canDrag = enabled && !_running;
+    final block = _PuzzleBlock(
+      color: enabled ? cmd.color : C.dim,
+      icon: enabled ? cmd.icon : Icons.lock_rounded,
+      code: cmd.code,
+      sub: enabled ? cmd.sub : 'belum dibuka',
+      compact: true,
+      locked: !enabled,
+    );
+    final feedbackBlock = _PuzzleBlock(
+      color: cmd.color,
+      icon: cmd.icon,
+      code: cmd.code,
+      sub: cmd.sub,
+    );
+
+    final draggable = Draggable<_BlockDragData>(
+      data: _BlockDragData(id),
+      maxSimultaneousDrags: canDrag ? 1 : 0,
+      onDragStarted: canDrag ? _beginBlockDrag : null,
+      onDragUpdate: canDrag ? _trackBlockDrag : null,
+      onDragEnd: canDrag ? (_) => _endBlockDrag() : null,
+      feedback: Material(
+        type: MaterialType.transparency,
+        child: SizedBox(width: feedbackWidth, child: feedbackBlock),
+      ),
+      childWhenDragging: Opacity(opacity: .35, child: block),
+      child: block,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: GestureDetector(
+        onTap: enabled
+            ? () => _addBlock(id)
+            : () => _toast('Balok ini belum dibuka di level ${lv.number}'),
+        child: Opacity(opacity: enabled ? 1 : .55, child: draggable),
       ),
     );
   }
@@ -3203,7 +3819,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               gradient: const LinearGradient(colors: [C.gold, C.orange]),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.lightbulb_rounded, color: Colors.white, size: 19),
+            child: const Icon(
+              Icons.lightbulb_rounded,
+              color: Colors.white,
+              size: 19,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -3238,6 +3858,221 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 }
 
 // ============================================================
+// PUZZLE BLOCK — tampilan blok visual ala Scratch/Blockly
+// ============================================================
+class _BlockDragData {
+  final String id;
+  final int? fromIndex; // null = blok baru dari palet
+  const _BlockDragData(this.id, {this.fromIndex});
+}
+
+class _PuzzleBlock extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+  final String code;
+  final String? sub;
+  final bool isStart;
+  final bool compact;
+  final bool locked;
+  final bool running;
+  final VoidCallback? onDelete;
+
+  const _PuzzleBlock({
+    required this.color,
+    required this.icon,
+    required this.code,
+    this.sub,
+    this.isStart = false,
+    this.compact = false,
+    this.locked = false,
+    this.running = false,
+    this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _PuzzleBlockPainter(
+        color: color,
+        isStart: isStart,
+        compact: compact,
+        running: running,
+      ),
+      child: Padding(
+        padding: compact
+            ? const EdgeInsets.fromLTRB(9, 8, 8, 7)
+            : const EdgeInsets.fromLTRB(11, 10, 8, 9),
+        child: Row(
+          mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+          children: [
+            Icon(
+              icon,
+              color: C.navyDeep.withValues(alpha: locked ? .55 : .9),
+              size: compact ? 12 : 15,
+            ),
+            SizedBox(width: compact ? 6 : 8),
+            if (compact)
+              Text(
+                code,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: C.navyDeep.withValues(alpha: locked ? .7 : 1),
+                  fontFamily: 'monospace',
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w900,
+                ),
+              )
+            else
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      code,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: C.navyDeep,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    if (sub != null)
+                      Text(
+                        sub!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Color(0x66212B44),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 9,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (onDelete != null)
+              GestureDetector(
+                onTap: onDelete,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  margin: const EdgeInsets.only(left: 4),
+                  decoration: BoxDecoration(
+                    color: C.navyDeep.withValues(alpha: .14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    color: Color(0x99212B44),
+                    size: 14,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PuzzleBlockPainter extends CustomPainter {
+  final Color color;
+  final bool isStart;
+  final bool compact;
+  final bool running;
+
+  const _PuzzleBlockPainter({
+    required this.color,
+    required this.isStart,
+    required this.compact,
+    required this.running,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.width <= 4 || size.height <= 4) return;
+    final radius = compact ? 8.0 : 11.0;
+    final tabW = compact ? 22.0 : 28.0;
+    final tabH = compact ? 5.0 : 6.0;
+    final tabX = compact ? 14.0 : 18.0;
+
+    final body = RRect.fromLTRBAndCorners(
+      0,
+      0,
+      size.width,
+      size.height,
+      topLeft: Radius.circular(radius),
+      topRight: Radius.circular(radius),
+      bottomLeft: Radius.circular(radius),
+      bottomRight: Radius.circular(radius),
+    );
+    var path = Path()..addRRect(body);
+
+    // Lekuk di atas agar blok bisa disambung dengan blok sebelumnya.
+    if (!isStart) {
+      final notch = RRect.fromRectAndRadius(
+        Rect.fromLTWH(tabX, -tabH, tabW, tabH * 2),
+        Radius.circular(tabH),
+      );
+      path = Path.combine(
+        PathOperation.difference,
+        path,
+        Path()..addRRect(notch),
+      );
+    }
+
+    // Tonjolan di bawah yang masuk ke lekuk blok berikutnya.
+    final tab = RRect.fromRectAndRadius(
+      Rect.fromLTWH(tabX, size.height - tabH, tabW, tabH * 2),
+      Radius.circular(tabH),
+    );
+    path = Path.combine(PathOperation.union, path, Path()..addRRect(tab));
+
+    canvas.drawShadow(
+      path,
+      Colors.black.withValues(alpha: .38),
+      compact ? 2 : 4,
+      false,
+    );
+    final fill = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [color, Color.lerp(color, Colors.black, .10)!],
+      ).createShader(Offset.zero & size);
+    canvas.drawPath(path, fill);
+
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = running ? 2 : 1
+        ..color = running ? Colors.white : Colors.white.withValues(alpha: .14),
+    );
+
+    // Kilau tipis di tepi atas supaya blok terlihat premium.
+    canvas.save();
+    canvas.clipPath(path);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, 1.2),
+      Paint()..color = Colors.white.withValues(alpha: .20),
+    );
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _PuzzleBlockPainter old) =>
+      old.color != color ||
+      old.isStart != isStart ||
+      old.compact != compact ||
+      old.running != running;
+}
+
+// ============================================================
 // CARTOON ART — robot, kambing, batu, semak, pohon, tunggul
 // ============================================================
 class _CartoonArt {
@@ -3268,14 +4103,22 @@ class _CartoonArt {
     // kaki
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(-0.13 * s, 0.30 * s), width: 0.20 * s, height: 0.30 * s),
+        Rect.fromCenter(
+          center: c + Offset(-0.13 * s, 0.30 * s),
+          width: 0.20 * s,
+          height: 0.30 * s,
+        ),
         Radius.circular(0.09 * s),
       ),
       suitDark,
     );
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0.13 * s, 0.30 * s), width: 0.20 * s, height: 0.30 * s),
+        Rect.fromCenter(
+          center: c + Offset(0.13 * s, 0.30 * s),
+          width: 0.20 * s,
+          height: 0.30 * s,
+        ),
         Radius.circular(0.09 * s),
       ),
       suitDark,
@@ -3283,14 +4126,22 @@ class _CartoonArt {
     // lengan
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(-0.34 * s, 0.04 * s), width: 0.17 * s, height: 0.34 * s),
+        Rect.fromCenter(
+          center: c + Offset(-0.34 * s, 0.04 * s),
+          width: 0.17 * s,
+          height: 0.34 * s,
+        ),
         Radius.circular(0.08 * s),
       ),
       suit,
     );
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0.34 * s, 0.04 * s), width: 0.17 * s, height: 0.34 * s),
+        Rect.fromCenter(
+          center: c + Offset(0.34 * s, 0.04 * s),
+          width: 0.17 * s,
+          height: 0.34 * s,
+        ),
         Radius.circular(0.08 * s),
       ),
       suit,
@@ -3298,20 +4149,31 @@ class _CartoonArt {
     // badan
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0, 0.02 * s), width: 0.58 * s, height: 0.52 * s),
+        Rect.fromCenter(
+          center: c + Offset(0, 0.02 * s),
+          width: 0.58 * s,
+          height: 0.52 * s,
+        ),
         Radius.circular(0.19 * s),
       ),
       suit,
     );
     // lencana
-    cv.drawCircle(c + Offset(0, 0.02 * s), 0.09 * s,
-        Paint()..color = const Color(0xFFCFEAFF));
+    cv.drawCircle(
+      c + Offset(0, 0.02 * s),
+      0.09 * s,
+      Paint()..color = const Color(0xFFCFEAFF),
+    );
     // kepala
     cv.drawCircle(c + Offset(0, -0.30 * s), 0.27 * s, skin);
     // mahkota topi
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0, -0.50 * s), width: 0.42 * s, height: 0.30 * s),
+        Rect.fromCenter(
+          center: c + Offset(0, -0.50 * s),
+          width: 0.42 * s,
+          height: 0.30 * s,
+        ),
         Radius.circular(0.14 * s),
       ),
       hat,
@@ -3319,7 +4181,11 @@ class _CartoonArt {
     // brim topi
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0, -0.35 * s), width: 0.64 * s, height: 0.11 * s),
+        Rect.fromCenter(
+          center: c + Offset(0, -0.35 * s),
+          width: 0.64 * s,
+          height: 0.11 * s,
+        ),
         Radius.circular(0.055 * s),
       ),
       hatDark,
@@ -3330,7 +4196,10 @@ class _CartoonArt {
     // senyum
     cv.drawArc(
       Rect.fromCenter(
-          center: c + Offset(0, -0.245 * s), width: 0.20 * s, height: 0.16 * s),
+        center: c + Offset(0, -0.245 * s),
+        width: 0.20 * s,
+        height: 0.16 * s,
+      ),
       0,
       math.pi,
       false,
@@ -3356,7 +4225,10 @@ class _CartoonArt {
       cv.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(
-              center: c + Offset(dx * s, 0.28 * s), width: 0.07 * s, height: 0.22 * s),
+            center: c + Offset(dx * s, 0.28 * s),
+            width: 0.07 * s,
+            height: 0.22 * s,
+          ),
           Radius.circular(0.03 * s),
         ),
         hoof,
@@ -3368,12 +4240,18 @@ class _CartoonArt {
     // badan (oval, lebih langsing dari domba)
     cv.drawOval(
       Rect.fromCenter(
-          center: c + Offset(-0.02 * s, 0.02 * s), width: 0.52 * s, height: 0.40 * s),
+        center: c + Offset(-0.02 * s, 0.02 * s),
+        width: 0.52 * s,
+        height: 0.40 * s,
+      ),
       cream,
     );
     cv.drawOval(
       Rect.fromCenter(
-          center: c + Offset(-0.02 * s, 0.10 * s), width: 0.46 * s, height: 0.22 * s),
+        center: c + Offset(-0.02 * s, 0.10 * s),
+        width: 0.46 * s,
+        height: 0.22 * s,
+      ),
       creamShade,
     );
 
@@ -3382,10 +4260,18 @@ class _CartoonArt {
       final p = Path()
         ..moveTo(c.dx + sx * s, c.dy - 0.30 * s)
         ..quadraticBezierTo(
-            c.dx + (sx - 0.06) * s, c.dy - 0.50 * s, c.dx + (sx - 0.16) * s, c.dy - 0.46 * s)
+          c.dx + (sx - 0.06) * s,
+          c.dy - 0.50 * s,
+          c.dx + (sx - 0.16) * s,
+          c.dy - 0.46 * s,
+        )
         ..lineTo(c.dx + (sx - 0.14) * s, c.dy - 0.40 * s)
         ..quadraticBezierTo(
-            c.dx + (sx - 0.08) * s, c.dy - 0.42 * s, c.dx + (sx + 0.02) * s, c.dy - 0.26 * s)
+          c.dx + (sx - 0.08) * s,
+          c.dy - 0.42 * s,
+          c.dx + (sx + 0.02) * s,
+          c.dy - 0.26 * s,
+        )
         ..close();
       cv.drawPath(p, horn);
     }
@@ -3393,12 +4279,18 @@ class _CartoonArt {
     // telinga jatuh ke samping
     cv.drawOval(
       Rect.fromCenter(
-          center: c + Offset(-0.14 * s, -0.24 * s), width: 0.16 * s, height: 0.09 * s),
+        center: c + Offset(-0.14 * s, -0.24 * s),
+        width: 0.16 * s,
+        height: 0.09 * s,
+      ),
       creamShade,
     );
     cv.drawOval(
       Rect.fromCenter(
-          center: c + Offset(0.16 * s, -0.24 * s), width: 0.16 * s, height: 0.09 * s),
+        center: c + Offset(0.16 * s, -0.24 * s),
+        width: 0.16 * s,
+        height: 0.09 * s,
+      ),
       creamShade,
     );
 
@@ -3418,7 +4310,10 @@ class _CartoonArt {
     cv.drawCircle(c + Offset(0.07 * s, -0.30 * s), 0.030 * s, ink);
     cv.drawArc(
       Rect.fromCenter(
-          center: c + Offset(0.01 * s, -0.25 * s), width: 0.13 * s, height: 0.10 * s),
+        center: c + Offset(0.01 * s, -0.25 * s),
+        width: 0.13 * s,
+        height: 0.10 * s,
+      ),
       0,
       math.pi,
       false,
@@ -3463,7 +4358,11 @@ class _CartoonArt {
     final ink = Paint()..color = const Color(0xFF3A3A4A);
 
     cv.drawOval(
-      Rect.fromCenter(center: c + Offset(0, 0.14 * s), width: 0.44 * s, height: 0.14 * s),
+      Rect.fromCenter(
+        center: c + Offset(0, 0.14 * s),
+        width: 0.44 * s,
+        height: 0.14 * s,
+      ),
       Paint()..color = const Color(0x33000000),
     );
     // kaki
@@ -3471,7 +4370,10 @@ class _CartoonArt {
       cv.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(
-              center: c + Offset(dx * s, 0.24 * s), width: 0.07 * s, height: 0.20 * s),
+            center: c + Offset(dx * s, 0.24 * s),
+            width: 0.07 * s,
+            height: 0.20 * s,
+          ),
           Radius.circular(0.03 * s),
         ),
         skin,
@@ -3481,11 +4383,19 @@ class _CartoonArt {
     if (shorn) {
       // Setelah dicukur: badan lebih langsing, tanpa bulatan wol
       cv.drawOval(
-        Rect.fromCenter(center: c + Offset(-0.02 * s, 0.02 * s), width: 0.50 * s, height: 0.34 * s),
+        Rect.fromCenter(
+          center: c + Offset(-0.02 * s, 0.02 * s),
+          width: 0.50 * s,
+          height: 0.34 * s,
+        ),
         skin,
       );
       cv.drawOval(
-        Rect.fromCenter(center: c + Offset(-0.02 * s, 0.10 * s), width: 0.42 * s, height: 0.16 * s),
+        Rect.fromCenter(
+          center: c + Offset(-0.02 * s, 0.10 * s),
+          width: 0.42 * s,
+          height: 0.16 * s,
+        ),
         Paint()..color = const Color(0xFF5C5468),
       );
     } else {
@@ -3503,7 +4413,11 @@ class _CartoonArt {
     cv.drawCircle(c + Offset(0.22 * s, -0.10 * s), 0.13 * s, skin);
     // telinga
     cv.drawOval(
-      Rect.fromCenter(center: c + Offset(0.13 * s, -0.16 * s), width: 0.13 * s, height: 0.07 * s),
+      Rect.fromCenter(
+        center: c + Offset(0.13 * s, -0.16 * s),
+        width: 0.13 * s,
+        height: 0.07 * s,
+      ),
       skin,
     );
     // mata
@@ -3512,7 +4426,10 @@ class _CartoonArt {
     // senyum
     cv.drawArc(
       Rect.fromCenter(
-          center: c + Offset(0.26 * s, -0.07 * s), width: 0.10 * s, height: 0.08 * s),
+        center: c + Offset(0.26 * s, -0.07 * s),
+        width: 0.10 * s,
+        height: 0.08 * s,
+      ),
       0,
       math.pi,
       false,
@@ -3523,26 +4440,42 @@ class _CartoonArt {
         ..strokeCap = StrokeCap.round,
     );
     // ekor
-    cv.drawCircle(c + Offset(-0.22 * s, -0.04 * s), 0.055 * s, shorn ? skin : wool);
+    cv.drawCircle(
+      c + Offset(-0.22 * s, -0.04 * s),
+      0.055 * s,
+      shorn ? skin : wool,
+    );
   }
 
   static void tree(Canvas cv, Offset c, double s) {
     // bayangan lembut di dasar
     cv.drawOval(
-      Rect.fromCenter(center: c + Offset(0, 0.16 * s), width: 0.46 * s, height: 0.16 * s),
+      Rect.fromCenter(
+        center: c + Offset(0, 0.16 * s),
+        width: 0.46 * s,
+        height: 0.16 * s,
+      ),
       Paint()..color = const Color(0x33000000),
     );
     // batang
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0, 0.02 * s), width: 0.13 * s, height: 0.30 * s),
+        Rect.fromCenter(
+          center: c + Offset(0, 0.02 * s),
+          width: 0.13 * s,
+          height: 0.30 * s,
+        ),
         Radius.circular(0.03 * s),
       ),
       Paint()..color = const Color(0xFF6B4A2F),
     );
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(-0.03 * s, 0.02 * s), width: 0.05 * s, height: 0.28 * s),
+        Rect.fromCenter(
+          center: c + Offset(-0.03 * s, 0.02 * s),
+          width: 0.05 * s,
+          height: 0.28 * s,
+        ),
         Radius.circular(0.02 * s),
       ),
       Paint()..color = const Color(0xFF8A6242),
@@ -3564,22 +4497,38 @@ class _CartoonArt {
   /// Tunggul yang tersisa setelah pohon ditebang.
   static void stump(Canvas cv, Offset c, double s) {
     cv.drawOval(
-      Rect.fromCenter(center: c + Offset(0, 0.12 * s), width: 0.34 * s, height: 0.12 * s),
+      Rect.fromCenter(
+        center: c + Offset(0, 0.12 * s),
+        width: 0.34 * s,
+        height: 0.12 * s,
+      ),
       Paint()..color = const Color(0x33000000),
     );
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0, 0.02 * s), width: 0.24 * s, height: 0.20 * s),
+        Rect.fromCenter(
+          center: c + Offset(0, 0.02 * s),
+          width: 0.24 * s,
+          height: 0.20 * s,
+        ),
         Radius.circular(0.04 * s),
       ),
       Paint()..color = const Color(0xFF6B4A2F),
     );
     cv.drawOval(
-      Rect.fromCenter(center: c + Offset(0, -0.07 * s), width: 0.24 * s, height: 0.10 * s),
+      Rect.fromCenter(
+        center: c + Offset(0, -0.07 * s),
+        width: 0.24 * s,
+        height: 0.10 * s,
+      ),
       Paint()..color = const Color(0xFFB98A5E),
     );
     cv.drawOval(
-      Rect.fromCenter(center: c + Offset(0, -0.07 * s), width: 0.14 * s, height: 0.06 * s),
+      Rect.fromCenter(
+        center: c + Offset(0, -0.07 * s),
+        width: 0.14 * s,
+        height: 0.06 * s,
+      ),
       Paint()..color = const Color(0xFF8A6242),
     );
   }
@@ -3597,18 +4546,19 @@ class _CartoonArt {
     // bayangan lembut di dasar
     cv.drawOval(
       Rect.fromCenter(
-          center: c + Offset(0, ht * 0.8),
-          width: w * 2.1,
-          height: h * 2.1),
+        center: c + Offset(0, ht * 0.8),
+        width: w * 2.1,
+        height: h * 2.1,
+      ),
       Paint()..color = const Color(0x33000000),
     );
 
-    final left = Paint()..color =
-        stone ? const Color(0xFF8B94A8) : const Color(0xFF9C6B3B);
-    final right = Paint()..color =
-        stone ? const Color(0xFFA9B2C4) : const Color(0xFFC08A50);
-    final top = Paint()..color =
-        stone ? const Color(0xFFCFD6E4) : const Color(0xFFE3B27C);
+    final left = Paint()
+      ..color = stone ? const Color(0xFF8B94A8) : const Color(0xFF9C6B3B);
+    final right = Paint()
+      ..color = stone ? const Color(0xFFA9B2C4) : const Color(0xFFC08A50);
+    final top = Paint()
+      ..color = stone ? const Color(0xFFCFD6E4) : const Color(0xFFE3B27C);
 
     // sisi kiri
     cv.drawPath(
@@ -3650,13 +4600,22 @@ class _CartoonArt {
           .withValues(alpha: .85);
     if (stone) {
       cv.drawLine(
-          Offset.lerp(topP, leftP, .5)!, Offset.lerp(rightP, frontP, .5)!, line);
+        Offset.lerp(topP, leftP, .5)!,
+        Offset.lerp(rightP, frontP, .5)!,
+        line,
+      );
       cv.drawLine(
-          Offset.lerp(topP, rightP, .5)!, Offset.lerp(leftP, frontP, .5)!, line);
+        Offset.lerp(topP, rightP, .5)!,
+        Offset.lerp(leftP, frontP, .5)!,
+        line,
+      );
     } else {
       for (final u in const [0.33, 0.67]) {
-        cv.drawLine(Offset.lerp(topP, leftP, u)!,
-            Offset.lerp(rightP, frontP, u)!, line);
+        cv.drawLine(
+          Offset.lerp(topP, leftP, u)!,
+          Offset.lerp(rightP, frontP, u)!,
+          line,
+        );
       }
     }
     // garis pemisah dua sisi depan
@@ -3666,7 +4625,11 @@ class _CartoonArt {
   static void bush(Canvas cv, Offset c, double s) {
     cv.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c + Offset(0, 0.20 * s), width: 0.14 * s, height: 0.22 * s),
+        Rect.fromCenter(
+          center: c + Offset(0, 0.20 * s),
+          width: 0.14 * s,
+          height: 0.22 * s,
+        ),
         Radius.circular(0.05 * s),
       ),
       Paint()..color = const Color(0xFF6B4A2F),
@@ -3683,13 +4646,27 @@ class _CartoonArt {
 // ============================================================
 // ARENA PAINTER — papan isometrik
 // ============================================================
-enum _ItemKind { bush, rock, robot, goat, tree, stump, sheep, sheepShorn, plank }
+enum _ItemKind {
+  bush,
+  rock,
+  robot,
+  goat,
+  tree,
+  stump,
+  sheep,
+  sheepShorn,
+  plank,
+  plankActive,
+}
 
 class _Item {
-  final int r, c;
+  final double r, c;
   final _ItemKind kind;
   final int mat; // material papan: 0 = kayu, 1 = batu
-  _Item(this.r, this.c, this.kind, [this.mat = 0]);
+  final int index; // indeks pohon/domba di data level
+  _Item(num r, num c, this.kind, [this.mat = 0, this.index = -1])
+    : r = r.toDouble(),
+      c = c.toDouble();
 }
 
 class _ArenaPainter extends CustomPainter {
@@ -3702,11 +4679,28 @@ class _ArenaPainter extends CustomPainter {
   final List<bool> sheepShorn; // sejajar dengan sheep
   final List<List<int>> walls; // petak area bangunan
   final List<List<int>> placed; // papan terpasang: [row, col, material]
-  final int robotRow, robotCol, robotDir;
+  final double robotRow, robotCol, robotDir;
   final int goalRow, goalCol;
-  final ui.Image? karakter; // sprite karakter pemain (null = pakai gambar bawaan)
+  final ui.Image?
+  karakter; // sprite karakter pemain (null = pakai gambar bawaan)
   final ui.Image? domba; // sprite domba (null = pakai gambar bawaan)
   final ui.Image? pohon; // sprite pohon (null = pakai gambar bawaan)
+
+  // ── Visual (tidak memengaruhi logika) ─────────────────────
+  final BoardTheme theme;
+  final RobotPose pose;
+  final double poseT, idleT;
+  final bool jump;
+  final int? activeTree;
+  final int? activeSheep;
+  final String? activePlank;
+  final int activePlankMat;
+  final CostumeItem? hat;
+  final CostumeItem? shirt;
+  final CostumeItem? shoes;
+  final CostumeItem? scarf;
+  final CostumeItem? wings;
+  final CostumeItem? accessory;
 
   _ArenaPainter({
     required this.size,
@@ -3726,10 +4720,126 @@ class _ArenaPainter extends CustomPainter {
     this.karakter,
     this.domba,
     this.pohon,
+    this.theme = BoardTheme.padangRumput,
+    this.pose = RobotPose.idle,
+    this.poseT = 1,
+    this.idleT = 0,
+    this.jump = false,
+    this.activeTree,
+    this.activeSheep,
+    this.activePlank,
+    this.activePlankMat = 0,
+    this.hat,
+    this.shirt,
+    this.shoes,
+    this.scarf,
+    this.wings,
+    this.accessory,
   });
 
-  bool _placedAt(int r, int c) =>
-      placed.any((p) => p[0] == r && p[1] == c);
+  bool _placedAt(int r, int c) => placed.any((p) => p[0] == r && p[1] == c);
+
+  /// Dekorasi kecil di atas petak, deterministik berdasarkan (r, c)
+  /// supaya tidak berubah-ubah tiap frame.
+  void _paintTileDecor(
+    Canvas cv,
+    Offset p,
+    double tw,
+    double th,
+    int r,
+    int c,
+  ) {
+    final seed = (r * 17 + c * 31) % 9;
+    final a = tw * 0.11;
+    switch (theme.decorKind) {
+      case BoardDecor.flowers:
+        if (seed > 2) return;
+        final cx = p.dx + (seed - 1) * tw * 0.16;
+        final cy = p.dy + (seed.isEven ? 1 : -1) * th * 0.10;
+        cv.drawLine(
+          Offset(cx, cy),
+          Offset(cx, cy - a * 0.9),
+          Paint()
+            ..color = const Color(0xFF3C7D24)
+            ..strokeWidth = tw * 0.012
+            ..strokeCap = StrokeCap.round,
+        );
+        cv.drawCircle(
+          Offset(cx, cy - a * 1.1),
+          a * 0.42,
+          Paint()..color = theme.decor,
+        );
+        cv.drawCircle(
+          Offset(cx, cy - a * 1.1),
+          a * 0.18,
+          Paint()..color = const Color(0xFFFFF3B0),
+        );
+        break;
+      case BoardDecor.pebbles:
+        if (seed != 0 && seed != 4 && seed != 7) return;
+        cv.drawOval(
+          Rect.fromCenter(
+            center: p + Offset((seed - 3) * tw * 0.10, th * 0.05),
+            width: a * 1.4,
+            height: a * 0.7,
+          ),
+          Paint()..color = theme.decor.withValues(alpha: .7),
+        );
+        break;
+      case BoardDecor.conifer:
+        if (seed != 1 && seed != 5 && seed != 8) return;
+        final cx = p.dx + (seed - 4) * tw * 0.10;
+        final cy = p.dy - th * 0.04;
+        final tri = Path()
+          ..moveTo(cx, cy - a * 1.5)
+          ..lineTo(cx + a * 0.8, cy + a * 0.4)
+          ..lineTo(cx - a * 0.8, cy + a * 0.4)
+          ..close();
+        cv.drawPath(tri, Paint()..color = theme.decor.withValues(alpha: .8));
+        break;
+      case BoardDecor.straw:
+        if (seed != 2 && seed != 5) return;
+        final cx = p.dx + (seed - 3) * tw * 0.10;
+        final cy = p.dy + th * 0.04;
+        final line = Paint()
+          ..color = theme.decor.withValues(alpha: .65)
+          ..strokeWidth = tw * 0.012
+          ..strokeCap = StrokeCap.round;
+        cv.drawLine(
+          Offset(cx - a, cy),
+          Offset(cx + a * 0.8, cy - a * 0.5),
+          line,
+        );
+        cv.drawLine(
+          Offset(cx - a * 0.6, cy + a * 0.4),
+          Offset(cx + a, cy),
+          line,
+        );
+        break;
+      case BoardDecor.foundation:
+        final line = Paint()
+          ..color = theme.edge.withValues(alpha: .16)
+          ..strokeWidth = tw * 0.008;
+        cv.drawLine(
+          Offset(p.dx - tw * 0.30, p.dy),
+          Offset(p.dx + tw * 0.30, p.dy),
+          line,
+        );
+        cv.drawLine(
+          Offset(p.dx, p.dy - th * 0.30),
+          Offset(p.dx, p.dy + th * 0.30),
+          line,
+        );
+        if (seed == 0) {
+          cv.drawCircle(
+            Offset(p.dx, p.dy),
+            tw * 0.018,
+            Paint()..color = theme.accent.withValues(alpha: .55),
+          );
+        }
+        break;
+    }
+  }
 
   @override
   void paint(Canvas canvas, Size sz) {
@@ -3751,7 +4861,10 @@ class _ArenaPainter extends CustomPainter {
     final ox = sz.width / 2;
     final oy = (sz.height - (n * th + depth)) / 2 + th / 2;
 
-    Offset center(int r, int c) => Offset(ox + (c - r) * tw / 2, oy + (r + c) * th / 2);
+    Offset center(num r, num c) => Offset(
+      ox + (c.toDouble() - r.toDouble()) * tw / 2,
+      oy + (r.toDouble() + c.toDouble()) * th / 2,
+    );
 
     final top = Offset(ox, oy - th / 2);
     final right = center(n - 1, 0) + Offset(tw / 2, 0);
@@ -3766,7 +4879,7 @@ class _ArenaPainter extends CustomPainter {
         ..lineTo(left.dx, left.dy + depth)
         ..lineTo(bottom.dx, bottom.dy + depth)
         ..close(),
-      Paint()..color = Color.lerp(C.boardSide, Colors.black, 0.2)!,
+      Paint()..color = Color.lerp(theme.side, Colors.black, 0.2)!,
     );
     canvas.drawPath(
       Path()
@@ -3775,7 +4888,7 @@ class _ArenaPainter extends CustomPainter {
         ..lineTo(bottom.dx, bottom.dy + depth)
         ..lineTo(right.dx, right.dy + depth)
         ..close(),
-      Paint()..color = C.boardSide,
+      Paint()..color = theme.side,
     );
 
     // alas papan
@@ -3785,13 +4898,13 @@ class _ArenaPainter extends CustomPainter {
       ..lineTo(bottom.dx, bottom.dy)
       ..lineTo(left.dx, left.dy)
       ..close();
-    canvas.drawPath(base, Paint()..color = C.boardTop);
+    canvas.drawPath(base, Paint()..color = theme.top);
 
     // petak
     final stroke = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
-      ..color = Colors.white.withOpacity(0.10);
+      ..color = theme.edge.withValues(alpha: .22);
     for (var r = 0; r < n; r++) {
       for (var c = 0; c < n; c++) {
         final p = center(r, c);
@@ -3803,11 +4916,14 @@ class _ArenaPainter extends CustomPainter {
           ..close();
         canvas.drawPath(
           tile,
-          Paint()..color = (r + c).isEven ? C.boardTop : C.boardTop2,
+          Paint()..color = (r + c).isEven ? theme.top : theme.top2,
         );
+        _paintTileDecor(canvas, p, tw, th, r, c);
         canvas.drawPath(tile, stroke);
         // area bangunan yang belum dipasangi papan: garis oranye putus-putus
-        if (walls.any((w) => w[0] == r && w[1] == c) && !_placedAt(r, c)) {
+        if (walls.any((w) => w[0] == r && w[1] == c) &&
+            !_placedAt(r, c) &&
+            activePlank != '$r,$c') {
           canvas.drawPath(
             tile,
             Paint()..color = C.orangePop.withValues(alpha: .16),
@@ -3838,18 +4954,43 @@ class _ArenaPainter extends CustomPainter {
     // Pohon menggantikan sasaran kambing; setelah ditebang tinggal tunggul.
     for (var i = 0; i < trees.length; i++) {
       final cut = i < treesChopped.length && treesChopped[i];
-      items.add(_Item(trees[i][0], trees[i][1],
-          cut ? _ItemKind.stump : _ItemKind.tree));
+      items.add(
+        _Item(
+          trees[i][0],
+          trees[i][1],
+          cut ? _ItemKind.stump : _ItemKind.tree,
+          0,
+          i,
+        ),
+      );
     }
     // Domba juga menggantikan sasaran kambing; setelah dicukur wolnya hilang.
     for (var i = 0; i < sheep.length; i++) {
       final done = i < sheepShorn.length && sheepShorn[i];
-      items.add(_Item(sheep[i][0], sheep[i][1],
-          done ? _ItemKind.sheepShorn : _ItemKind.sheep));
+      items.add(
+        _Item(
+          sheep[i][0],
+          sheep[i][1],
+          done ? _ItemKind.sheepShorn : _ItemKind.sheep,
+          0,
+          i,
+        ),
+      );
     }
     // Papan yang sudah dipasang di petak area bangunan.
     for (final p in placed) {
       items.add(_Item(p[0], p[1], _ItemKind.plank, p[2]));
+    }
+    // Papan yang sedang dianimasikan muncul (belum masuk _placed).
+    if (activePlank != null) {
+      final parts = activePlank!.split(',');
+      if (parts.length == 2) {
+        final ar = int.tryParse(parts[0]);
+        final ac = int.tryParse(parts[1]);
+        if (ar != null && ac != null && !_placedAt(ar, ac)) {
+          items.add(_Item(ar, ac, _ItemKind.plankActive, activePlankMat));
+        }
+      }
     }
     if (trees.isEmpty && sheep.isEmpty && walls.isEmpty) {
       items.add(_Item(goalRow, goalCol, _ItemKind.goat));
@@ -3858,8 +4999,12 @@ class _ArenaPainter extends CustomPainter {
     // Urutkan kedalaman; papan selalu lebih dulu di petak yang sama,
     // dan robot selalu digambar di atas papan yang ia injak.
     items.sort((a, b) {
-      final ka = (a.r + a.c) * 2 + (a.kind == _ItemKind.plank ? 0 : 1);
-      final kb = (b.r + b.c) * 2 + (b.kind == _ItemKind.plank ? 0 : 1);
+      final aPlank =
+          a.kind == _ItemKind.plank || a.kind == _ItemKind.plankActive;
+      final bPlank =
+          b.kind == _ItemKind.plank || b.kind == _ItemKind.plankActive;
+      final ka = (a.r + a.c) * 2 + (aPlank ? 0 : 1);
+      final kb = (b.r + b.c) * 2 + (bPlank ? 0 : 1);
       final cmp = ka.compareTo(kb);
       if (cmp != 0) return cmp;
       if (a.kind == _ItemKind.robot) return 1;
@@ -3881,11 +5026,19 @@ class _ArenaPainter extends CustomPainter {
             final h = scale * 0.70;
             final w = h * bushImg.width / bushImg.height;
             final dst = Rect.fromLTWH(
-                base.dx - w / 2, base.dy + scale * 0.14 - h, w, h);
+              base.dx - w / 2,
+              base.dy + scale * 0.14 - h,
+              w,
+              h,
+            );
             canvas.drawImageRect(
               bushImg,
-              Rect.fromLTWH(0, 0, bushImg.width.toDouble(),
-                  bushImg.height.toDouble()),
+              Rect.fromLTWH(
+                0,
+                0,
+                bushImg.width.toDouble(),
+                bushImg.height.toDouble(),
+              ),
               dst,
               Paint()..filterQuality = FilterQuality.medium,
             );
@@ -3897,42 +5050,99 @@ class _ArenaPainter extends CustomPainter {
           _CartoonArt.rock(canvas, base, scale * 0.68);
           break;
         case _ItemKind.tree:
+          final falling = it.index == activeTree;
+          final fall = falling
+              ? Curves.easeInCubic.transform(poseT.clamp(0.0, 1.0))
+              : 0.0;
+          if (falling) {
+            canvas.save();
+            canvas.translate(base.dx, base.dy);
+            canvas.rotate(0.92 * fall);
+            canvas.translate(-base.dx, -base.dy);
+          }
           final pohonImg = pohon;
           if (pohonImg != null) {
             final h = scale * 0.88;
             final w = h * pohonImg.width / pohonImg.height;
             final dst = Rect.fromLTWH(
-                base.dx - w / 2, base.dy + scale * 0.14 - h, w, h);
+              base.dx - w / 2,
+              base.dy + scale * 0.14 - h,
+              w,
+              h,
+            );
             canvas.drawImageRect(
               pohonImg,
               Rect.fromLTWH(
-                  0, 0, pohonImg.width.toDouble(), pohonImg.height.toDouble()),
+                0,
+                0,
+                pohonImg.width.toDouble(),
+                pohonImg.height.toDouble(),
+              ),
               dst,
               Paint()..filterQuality = FilterQuality.medium,
             );
           } else {
             _CartoonArt.tree(canvas, base, scale * 0.70);
           }
+          if (falling) canvas.restore();
           break;
         case _ItemKind.stump:
           _CartoonArt.stump(canvas, base, scale * 0.55);
           break;
         case _ItemKind.sheep:
+          final active = it.index == activeSheep;
+          final shearP = active
+              ? Curves.easeOutCubic.transform(poseT.clamp(0.0, 1.0))
+              : 0.0;
+          if (active) {
+            canvas.save();
+            canvas.translate(base.dx, base.dy);
+            canvas.scale(
+              1 + 0.08 * math.sin(shearP * math.pi),
+              1 - 0.14 * shearP,
+            );
+            canvas.translate(-base.dx, -base.dy);
+          }
           final dombaImg = domba;
           if (dombaImg != null) {
             final h = scale * 0.62;
             final w = h * dombaImg.width / dombaImg.height;
             final dst = Rect.fromLTWH(
-                base.dx - w / 2, base.dy + scale * 0.16 - h, w, h);
+              base.dx - w / 2,
+              base.dy + scale * 0.16 - h,
+              w,
+              h,
+            );
             canvas.drawImageRect(
               dombaImg,
               Rect.fromLTWH(
-                  0, 0, dombaImg.width.toDouble(), dombaImg.height.toDouble()),
+                0,
+                0,
+                dombaImg.width.toDouble(),
+                dombaImg.height.toDouble(),
+              ),
               dst,
               Paint()..filterQuality = FilterQuality.medium,
             );
           } else {
             _CartoonArt.sheep(canvas, base, scale * 0.58);
+          }
+          if (active) {
+            canvas.restore();
+            // Gumpalan wool terbang saat domba dicukur.
+            for (var i = 0; i < 6; i++) {
+              final a = -math.pi / 2 + (i - 2.5) * 0.34;
+              final d = shearP * scale * (0.20 + i * 0.025);
+              final pos =
+                  base +
+                  Offset(math.cos(a), math.sin(a)) * d -
+                  Offset(0, scale * 0.28);
+              canvas.drawCircle(
+                pos,
+                scale * 0.035 * (1 - shearP * 0.55),
+                Paint()..color = Colors.white.withValues(alpha: 1 - shearP),
+              );
+            }
           }
           break;
         case _ItemKind.sheepShorn:
@@ -3941,39 +5151,36 @@ class _ArenaPainter extends CustomPainter {
         case _ItemKind.plank:
           _CartoonArt.plank(canvas, base, scale * 0.9, stone: it.mat == 1);
           break;
+        case _ItemKind.plankActive:
+          final pop = Curves.easeOutBack.transform(poseT.clamp(0.0, 1.0));
+          canvas.save();
+          canvas.translate(base.dx, base.dy);
+          canvas.scale(0.2 + 0.8 * pop);
+          canvas.translate(-base.dx, -base.dy);
+          _CartoonArt.plank(canvas, base, scale * 0.9, stone: it.mat == 1);
+          canvas.restore();
+          break;
         case _ItemKind.robot:
-          // lingkaran biru + penunjuk arah
-          canvas.drawCircle(
-            base,
-            scale * 0.30,
-            Paint()..color = const Color(0xFF1E9BF0).withOpacity(0.28),
-          );
-          _CartoonArt.dashedCircle(
+          final lift = jump
+              ? math.sin(poseT.clamp(0.0, 1.0) * math.pi) * scale * 0.45
+              : 0.0;
+          paintKodi(
             canvas,
-            base,
-            scale * 0.30,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = scale * 0.028
-              ..color = const Color(0xFF5FC8FF),
-            dashes: 16,
+            ground: base,
+            scale: scale,
+            pose: pose,
+            poseT: poseT,
+            idleT: idleT,
+            dir: robotDir,
+            sprite: karakter,
+            hat: hat,
+            shirt: shirt,
+            shoes: shoes,
+            scarf: scarf,
+            wings: wings,
+            accessory: accessory,
+            lift: lift,
           );
-          final img = karakter;
-          if (img != null) {
-            // Sprite karakter (hasil crop "Depan" dari karakter.png).
-            final h = scale * 0.78;
-            final w = h * img.width / img.height;
-            final dst = Rect.fromLTWH(
-                base.dx - w / 2, base.dy + scale * 0.16 - h, w, h);
-            canvas.drawImageRect(
-              img,
-              Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
-              dst,
-              Paint()..filterQuality = FilterQuality.medium,
-            );
-          } else {
-            _CartoonArt.robot(canvas, base, scale * 0.58);
-          }
           break;
         case _ItemKind.goat:
           // lingkaran target oranye putus-putus
@@ -3994,11 +5201,19 @@ class _ArenaPainter extends CustomPainter {
             final h = scale * 0.62;
             final w = h * kambingImg.width / kambingImg.height;
             final dst = Rect.fromLTWH(
-                base.dx - w / 2, base.dy + scale * 0.16 - h, w, h);
+              base.dx - w / 2,
+              base.dy + scale * 0.16 - h,
+              w,
+              h,
+            );
             canvas.drawImageRect(
               kambingImg,
-              Rect.fromLTWH(0, 0, kambingImg.width.toDouble(),
-                  kambingImg.height.toDouble()),
+              Rect.fromLTWH(
+                0,
+                0,
+                kambingImg.width.toDouble(),
+                kambingImg.height.toDouble(),
+              ),
               dst,
               Paint()..filterQuality = FilterQuality.medium,
             );
@@ -4008,23 +5223,6 @@ class _ArenaPainter extends CustomPainter {
           break;
       }
     }
-
-    // penunjuk arah hadap robot
-    final rp = center(robotRow, robotCol) + Offset(0, th * 0.06);
-    final dirVec = Offset(kDc[robotDir].toDouble(), kDr[robotDir].toDouble());
-    final tipP = rp + dirVec * (scale * 0.24);
-    final sideP = rp + dirVec * (scale * 0.11) +
-        Offset(-dirVec.dy, dirVec.dx) * (scale * 0.08);
-    final sideP2 = rp + dirVec * (scale * 0.11) -
-        Offset(-dirVec.dy, dirVec.dx) * (scale * 0.08);
-    canvas.drawPath(
-      Path()
-        ..moveTo(tipP.dx, tipP.dy)
-        ..lineTo(sideP.dx, sideP.dy)
-        ..lineTo(sideP2.dx, sideP2.dy)
-        ..close(),
-      Paint()..color = C.cyan,
-    );
   }
 
   @override
@@ -4037,6 +5235,21 @@ class _ArenaPainter extends CustomPainter {
       old.robotDir != robotDir ||
       old.goalRow != goalRow ||
       old.goalCol != goalCol ||
+      old.theme != theme ||
+      old.pose != pose ||
+      old.poseT != poseT ||
+      old.idleT != idleT ||
+      old.jump != jump ||
+      old.activeTree != activeTree ||
+      old.activeSheep != activeSheep ||
+      old.activePlank != activePlank ||
+      old.activePlankMat != activePlankMat ||
+      old.hat != hat ||
+      old.shirt != shirt ||
+      old.shoes != shoes ||
+      old.scarf != scarf ||
+      old.wings != wings ||
+      old.accessory != accessory ||
       !_sameFlags(old.treesChopped, treesChopped) ||
       !_sameFlags(old.sheepShorn, sheepShorn) ||
       !_sameGrid(old.walls, walls) ||
@@ -4064,7 +5277,12 @@ class _ArenaPainter extends CustomPainter {
   /// Garis putus-putus berbentuk belah ketupat untuk menandai petak
   /// area bangunan (setengah lebar [hw], setengah tinggi [hh]).
   static void _dashDiamond(
-      Canvas cv, Offset p, double hw, double hh, Paint paint) {
+    Canvas cv,
+    Offset p,
+    double hw,
+    double hh,
+    Paint paint,
+  ) {
     final pts = <Offset>[
       Offset(p.dx, p.dy - hh),
       Offset(p.dx + hw, p.dy),
@@ -4089,6 +5307,7 @@ class _ArenaPainter extends CustomPainter {
 // ============================================================
 class LevelMapScreen extends StatelessWidget {
   const LevelMapScreen({super.key});
+
   /// Total bintang maksimum seluruh level (untuk StatChip di kepala peta).
   int get _maxStars => kLevels.fold<int>(0, (a, l) => a + l.starTarget);
 
@@ -4115,9 +5334,19 @@ class LevelMapScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Dunia 1',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Colors.white)),
-              StatChip(Icons.star_rounded, C.gold, '${prog.totalStars} / $_maxStars'),
+              const Text(
+                'Dunia 1',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
+              ),
+              StatChip(
+                Icons.star_rounded,
+                C.gold,
+                '${prog.totalStars} / $_maxStars',
+              ),
             ],
           ),
         ),
@@ -4130,7 +5359,9 @@ class LevelMapScreen extends StatelessWidget {
               final locked = state == 'lock';
               final color = locked ? C.navyCard2 : C.green;
               return Align(
-                alignment: i.isEven ? Alignment.centerLeft : Alignment.centerRight,
+                alignment: i.isEven
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   child: Column(
@@ -4139,10 +5370,9 @@ class LevelMapScreen extends StatelessWidget {
                         onTap: state == 'lock'
                             ? null
                             : () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => ChallengeScreen(level: lv)),
-                                ),
+                                context,
+                                playfulRoute(ChallengeScreen(level: lv)),
+                              ),
                         child: CircleAvatar(
                           radius: 32,
                           backgroundColor: color,
@@ -4154,11 +5384,14 @@ class LevelMapScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text('${lv.number}. ${lv.title}',
-                          style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: locked ? C.muted : Colors.white)),
+                      Text(
+                        '${lv.number}. ${lv.title}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: locked ? C.muted : Colors.white,
+                        ),
+                      ),
                       const SizedBox(height: 2),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -4190,7 +5423,7 @@ class LevelMapScreen extends StatelessWidget {
             border: Border.all(color: C.navyLine),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.28),
+                color: Colors.black.withValues(alpha: .28),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -4199,19 +5432,43 @@ class LevelMapScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('MISI AKTIF',
-                  style: TextStyle(fontSize: 10, color: C.cyan, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              const Text(
+                'MISI AKTIF',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: C.cyan,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
               const SizedBox(height: 3),
               // ikut data level supaya tidak pernah basi kalau konten berubah
-              Text('Level ${kLevels[3].number}: ${kLevels[3].title}',
-                  style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 15)),
+              Text(
+                'Level ${kLevels[3].number}: ${kLevels[3].title}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
               const SizedBox(height: 3),
-              Text(kLevels[3].mission,
-                  style: const TextStyle(fontSize: 12, color: C.muted, height: 1.35)),
+              Text(
+                kLevels[3].mission,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: C.muted,
+                  height: 1.35,
+                ),
+              ),
               const SizedBox(height: 8),
-              BigButton('AYO MULAI', C.green,
-                  () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => ChallengeScreen(level: kLevels[3])))),
+              BigButton(
+                'AYO MULAI',
+                C.green,
+                () => Navigator.push(
+                  context,
+                  playfulRoute(ChallengeScreen(level: kLevels[3])),
+                ),
+              ),
             ],
           ),
         ),
@@ -4223,481 +5480,273 @@ class LevelMapScreen extends StatelessWidget {
 // ============================================================
 // 4. LEVEL COMPLETE SCREEN
 // ============================================================
-class LevelCompleteScreen extends StatelessWidget {
+class LevelCompleteScreen extends StatefulWidget {
   final MissionLevel level;
 
   /// Bintang yang diraih di percobaan ini (0-3) — ditampilkan apa adanya.
   final int stars;
-  const LevelCompleteScreen({required this.level, required this.stars, super.key});
+  const LevelCompleteScreen({
+    required this.level,
+    required this.stars,
+    super.key,
+  });
+
+  @override
+  State<LevelCompleteScreen> createState() => _LevelCompleteScreenState();
+}
+
+class _LevelCompleteScreenState extends State<LevelCompleteScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _celebrate = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2400),
+  )..forward();
+  late final List<ConfettiPiece> _confetti = ConfettiPiece.make(
+    widget.level.number * 13 + widget.stars * 7,
+  );
 
   /// Level berikutnya, atau null kalau ini level terakhir.
   MissionLevel? get nextLevel {
-    final i = kLevels.indexWhere((l) => l.number == level.number);
+    final i = kLevels.indexWhere((l) => l.number == widget.level.number);
     if (i < 0 || i + 1 >= kLevels.length) return null;
     return kLevels[i + 1];
+  }
+
+  @override
+  void dispose() {
+    _celebrate.dispose();
+    super.dispose();
+  }
+
+  double _entrance(double start, {Curve curve = Curves.easeOutBack}) {
+    final local = ((_celebrate.value - start) / 0.22).clamp(0.0, 1.0);
+    return curve.transform(local);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.navy,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.emoji_events_rounded, size: 90, color: C.gold),
-              const SizedBox(height: 8),
-              const Text('HORE! MISI BERHASIL!',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.green)),
-              const SizedBox(height: 4),
-              Text('Level ${level.number}: ${level.title}',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: C.muted)),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (var i = 0; i < 3; i++)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: Icon(
-                        Icons.star_rounded,
-                        size: i == 1 ? 60 : 48,
-                        color: i < stars ? C.gold : C.navyLine,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: C.navyCard,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: C.navyLine),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.28),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text('${level.reward} XP',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w900, color: C.cyanSoft)),
-                    Text('+${level.reward ~/ 10} koin',
-                        style: const TextStyle(
-                            color: C.gold, fontWeight: FontWeight.w900)),
-                    Text(level.location,
-                        style: const TextStyle(color: C.muted, fontSize: 12)),
+      body: Stack(
+        children: [
+          // Cahaya lembut di belakang piala.
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, -0.35),
+                  radius: 0.9,
+                  colors: [
+                    C.gold.withValues(alpha: .14),
+                    C.navy.withValues(alpha: 0),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              if (nextLevel != null)
-                BigButton(
-                  'LEVEL BERIKUTNYA',
-                  C.green,
-                  () => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ChallengeScreen(level: nextLevel!)),
-                  ),
-                  icon: Icons.arrow_forward_rounded,
-                )
-              else
-                const Text(
-                  'Semua level sudah selesai!',
-                  style: TextStyle(color: C.muted, fontWeight: FontWeight.w700),
-                ),
-              const SizedBox(height: 12),
-              BigButton(
-                'ULANGI & SEMPURNAKAN',
-                C.blue,
-                () => Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => ChallengeScreen(level: level)),
-                ),
-                icon: Icons.refresh_rounded,
-              ),
-              TextButton(
-                onPressed: () => Navigator.popUntil(context, (r) => r.isFirst),
-                child: const Text('Kembali ke Beranda', style: TextStyle(color: C.muted)),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// 5. TOKO KOSTUM SCREEN
-// ============================================================
-/// Kategori aksesoris yang dijual di Toko Kostum.
-enum CostumeCategory {
-  baju('Baju', Icons.checkroom_rounded),
-  topi('Topi', Icons.school_rounded),
-  sepatu('Sepatu', Icons.hiking_rounded),
-  syal('Syal', Icons.waves_rounded),
-  sayap('Sayap', Icons.flight_rounded);
-
-  final String label;
-  final IconData icon;
-  const CostumeCategory(this.label, this.icon);
-}
-
-/// Satu barang yang dijual di Toko Kostum.
-class CostumeItem {
-  final String id;
-  final String name;
-  final CostumeCategory category;
-  final IconData icon;
-  final int price;
-  const CostumeItem(this.id, this.name, this.category, this.icon, this.price);
-}
-
-/// Daftar lengkap barang dagangan Toko Kostum.
-const kCostumeItems = <CostumeItem>[
-  // ── Baju ──
-  CostumeItem('baju_kaos', 'Kaos Kode', CostumeCategory.baju, Icons.checkroom_rounded, 80),
-  CostumeItem('baju_jaket', 'Jaket Robot', CostumeCategory.baju, Icons.dry_cleaning_rounded, 150),
-  CostumeItem('baju_ninja', 'Baju Ninja', CostumeCategory.baju, Icons.sports_martial_arts_rounded, 220),
-  CostumeItem('baju_armor', 'Armor Ksatria', CostumeCategory.baju, Icons.shield_rounded, 320),
-  // ── Topi ──
-  CostumeItem('topi_petualang', 'Topi Petualang', CostumeCategory.topi, Icons.school_rounded, 90),
-  CostumeItem('topi_koki', 'Topi Koki', CostumeCategory.topi, Icons.restaurant_rounded, 130),
-  CostumeItem('topi_helm', 'Helm Astronot', CostumeCategory.topi, Icons.rocket_launch_rounded, 280),
-  CostumeItem('topi_mahkota', 'Mahkota Emas', CostumeCategory.topi, Icons.workspace_premium_rounded, 420),
-  // ── Sepatu ──
-  CostumeItem('sepatu_lari', 'Sepatu Lari', CostumeCategory.sepatu, Icons.directions_run_rounded, 70),
-  CostumeItem('sepatu_boot', 'Sepatu Boot', CostumeCategory.sepatu, Icons.hiking_rounded, 140),
-  CostumeItem('sepatu_ninja', 'Sepatu Ninja', CostumeCategory.sepatu, Icons.bolt_rounded, 190),
-  CostumeItem('sepatu_roket', 'Sepatu Roket', CostumeCategory.sepatu, Icons.rocket_rounded, 300),
-  // ── Syal ──
-  CostumeItem('syal_biru', 'Syal Biru', CostumeCategory.syal, Icons.waves_rounded, 60),
-  CostumeItem('syal_hangat', 'Syal Hangat', CostumeCategory.syal, Icons.ac_unit_rounded, 110),
-  CostumeItem('syal_super', 'Syal Super', CostumeCategory.syal, Icons.auto_awesome_rounded, 230),
-  // ── Sayap ──
-  CostumeItem('sayap_peri', 'Sayap Peri', CostumeCategory.sayap, Icons.auto_fix_high_rounded, 160),
-  CostumeItem('sayap_burung', 'Sayap Burung', CostumeCategory.sayap, Icons.flight_rounded, 240),
-  CostumeItem('sayap_naga', 'Sayap Naga', CostumeCategory.sayap, Icons.whatshot_rounded, 360),
-  CostumeItem('sayap_cahaya', 'Sayap Cahaya', CostumeCategory.sayap, Icons.flare_rounded, 460),
-];
-
-class CustomizeScreen extends StatefulWidget {
-  const CustomizeScreen({super.key});
-  @override
-  State<CustomizeScreen> createState() => _CustomizeScreenState();
-}
-
-class _CustomizeScreenState extends State<CustomizeScreen> {
-  Color robotColor = C.blue;
-  CostumeCategory category = CostumeCategory.baju;
-  String selectedId = kCostumeItems.first.id;
-
-  CostumeItem get _selected =>
-      kCostumeItems.firstWhere((e) => e.id == selectedId);
-
-  List<CostumeItem> get _categoryItems =>
-      kCostumeItems.where((e) => e.category == category).toList();
-
-  void _selectCategory(CostumeCategory c) {
-    setState(() {
-      category = c;
-      selectedId = kCostumeItems.firstWhere((e) => e.category == c).id;
-    });
-  }
-
-  void _snack(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  Future<void> _buy(CostumeItem item) async {
-    final ok = await GameProgress.instance.buyItem(item.id, item.price);
-    if (!mounted) return;
-    _snack(
-      ok
-          ? 'Berhasil membeli ${item.name}!'
-          : 'Koin tidak cukup untuk membeli ${item.name}.',
-      ok ? C.green : C.red,
-    );
-  }
-
-  Future<void> _equip(CostumeItem item) async {
-    await GameProgress.instance.equipItem(item.category.name, item.id);
-  }
-
-  Future<void> _unequip(CostumeItem item) async {
-    await GameProgress.instance.unequipItem(item.category.name);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<int>(
-      valueListenable: GameProgress.instance.changes,
-      builder: (_, _, _) {
-        final prog = GameProgress.instance;
-        final item = _selected;
-        final owned = prog.ownsItem(item.id);
-        final worn = prog.isItemEquipped(item.category.name, item.id);
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  StatChip(Icons.monetization_on_rounded, C.gold,
-                      '${_groupNum(prog.coins)} Koin'),
-                  const StatChip(Icons.storefront_rounded, C.cyan, 'Toko Kostum'),
-                ],
-              ),
-              const SizedBox(height: 12),
-              // ── Pratinjau barang terpilih ──
-              Container(
-                height: 160,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: C.navyCard,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: C.navyLine),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.28),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+          // Konfeti perayaan.
+          Positioned.fill(
+            child: IgnorePointer(
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _celebrate,
+                  builder: (context, _) => CustomPaint(
+                    painter: ConfettiPainter(
+                      t: _celebrate.value,
+                      pieces: _confetti,
                     ),
-                  ],
+                    size: Size.infinite,
+                  ),
                 ),
-                child: Stack(
-                  children: [
-                    Center(child: Icon(item.icon, size: 100, color: robotColor)),
-                    if (worn)
-                      Positioned(
-                        top: 12,
-                        right: 12,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: C.cyan.withValues(alpha: .18),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: C.cyan),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: AnimatedBuilder(
+                      animation: _celebrate,
+                      builder: (context, _) => Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Transform.scale(
+                            scale: 0.6 + 0.4 * _entrance(0),
+                            child: Transform.rotate(
+                              angle:
+                                  math.sin(_celebrate.value * math.pi * 4) *
+                                  0.05 *
+                                  (1 - _celebrate.value),
+                              child: Icon(
+                                Icons.emoji_events_rounded,
+                                size: 90,
+                                color: C.gold.withValues(
+                                  alpha: _entrance(0).clamp(0.0, 1.0),
+                                ),
+                              ),
+                            ),
                           ),
-                          child: const Text('DIPAKAI',
+                          const SizedBox(height: 8),
+                          Opacity(
+                            opacity: _entrance(0.08).clamp(0.0, 1.0),
+                            child: const Text(
+                              'HORE! MISI BERHASIL!',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900,
-                                  color: C.cyan,
-                                  letterSpacing: 1)),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Center(
-                child: Text(
-                  item.name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w900, fontSize: 18, color: Colors.white),
-                ),
-              ),
-              Center(
-                child: Text(
-                  item.category.label.toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      color: C.cyan,
-                      letterSpacing: 1),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Text('WARNA',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
-                          color: C.muted,
-                          letterSpacing: 1)),
-                  const SizedBox(width: 10),
-                  for (final c in [C.blue, Colors.red, C.orange, Colors.purple])
-                    GestureDetector(
-                      onTap: () => setState(() => robotColor = c),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 10),
-                        width: 26,
-                        height: 26,
-                        decoration: BoxDecoration(
-                          color: c,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: robotColor == c ? C.cyan : Colors.transparent,
-                            width: 3,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                                color: C.green,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text('Koleksi Kostum',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
-              const SizedBox(height: 8),
-              // ── Tab kategori ──
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final c in CostumeCategory.values)
-                      GestureDetector(
-                        onTap: () => _selectCategory(c),
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: category == c
-                                ? C.cyan.withValues(alpha: .15)
-                                : C.navyCard,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: category == c ? C.cyan : C.navyLine),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Level ${widget.level.number}: ${widget.level.title}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: C.muted,
+                            ),
                           ),
-                          child: Row(
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(c.icon,
-                                  size: 16,
-                                  color: category == c ? C.cyan : C.dim),
-                              const SizedBox(width: 6),
-                              Text(c.label,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 12,
-                                      color: category == c ? C.cyan : C.dim)),
+                              for (var i = 0; i < 3; i++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 2,
+                                  ),
+                                  child: Transform.scale(
+                                    scale: i < widget.stars
+                                        ? _entrance(0.16 + i * 0.14)
+                                        : 1,
+                                    child: Icon(
+                                      Icons.star_rounded,
+                                      size: i == 1 ? 60 : 48,
+                                      color: i < widget.stars
+                                          ? C.gold
+                                          : C.navyLine,
+                                      shadows: i < widget.stars
+                                          ? [
+                                              Shadow(
+                                                color: C.gold.withValues(
+                                                  alpha: .55,
+                                                ),
+                                                blurRadius: 14,
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              // ── Grid barang per kategori ──
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _categoryItems.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  childAspectRatio: 1.05,
-                ),
-                itemBuilder: (_, i) {
-                  final it = _categoryItems[i];
-                  final isSel = it.id == selectedId;
-                  final isOwned = prog.ownsItem(it.id);
-                  final isWorn = prog.isItemEquipped(it.category.name, it.id);
-                  return GestureDetector(
-                    onTap: () => setState(() => selectedId = it.id),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: C.navyCard,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: isSel ? C.cyan : C.navyLine,
-                          width: isSel ? 3 : 1,
-                        ),
-                      ),
-                      child: Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: C.navyCard,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: C.navyLine),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: .28),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Icon(it.icon, size: 42, color: C.cyanSoft),
-                                const SizedBox(height: 4),
-                                Text(it.name,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
+                                Text(
+                                  '${widget.level.reward} XP',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    color: C.cyanSoft,
+                                  ),
+                                ),
+                                Text(
+                                  '+${widget.level.reward ~/ 10} koin',
+                                  style: const TextStyle(
+                                    color: C.gold,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    widget.level.location,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.white)),
-                                const SizedBox(height: 2),
-                                Text(
-                                  isOwned
-                                      ? (isWorn ? 'Terpasang' : 'Dimiliki')
-                                      : '${_groupNum(it.price)} koin',
-                                  style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w800,
-                                      color: isOwned ? C.cyan : C.gold),
+                                      color: C.muted,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          if (isWorn)
-                            const Positioned(
-                              top: 6,
-                              right: 6,
-                              child: Icon(Icons.check_circle_rounded,
-                                  size: 18, color: C.cyan),
+                          const SizedBox(height: 24),
+                          if (nextLevel != null)
+                            BigButton(
+                              'LEVEL BERIKUTNYA',
+                              C.green,
+                              () => Navigator.pushReplacement(
+                                context,
+                                playfulRoute(
+                                  ChallengeScreen(level: nextLevel!),
+                                ),
+                              ),
+                              icon: Icons.arrow_forward_rounded,
+                            )
+                          else
+                            const Text(
+                              'Semua level sudah selesai!',
+                              style: TextStyle(
+                                color: C.muted,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
+                          const SizedBox(height: 12),
+                          BigButton(
+                            'ULANGI & SEMPURNAKAN',
+                            C.blue,
+                            () => Navigator.pushReplacement(
+                              context,
+                              playfulRoute(
+                                ChallengeScreen(level: widget.level),
+                              ),
+                            ),
+                            icon: Icons.refresh_rounded,
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.popUntil(context, (r) => r.isFirst),
+                            child: const Text(
+                              'Kembali ke Beranda',
+                              style: TextStyle(color: C.muted),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: 14),
-              // ── Tombol aksi untuk barang terpilih ──
-              if (!owned)
-                BigButton(
-                  'BELI • ${_groupNum(item.price)} KOIN',
-                  C.gold,
-                  () => _buy(item),
-                  icon: Icons.shopping_cart_rounded,
-                )
-              else if (worn)
-                BigButton(
-                  'LEPAS',
-                  C.navyCard2,
-                  () => _unequip(item),
-                  icon: Icons.close_rounded,
-                )
-              else
-                BigButton(
-                  'PAKAI',
-                  C.green,
-                  () => _equip(item),
-                  icon: Icons.check_rounded,
+                  ),
                 ),
-            ],
+              ),
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
+
+// ============================================================
+// 5. TOKO KOSTUM SCREEN (implementasi di lib/shop_screen.dart)
+// ============================================================

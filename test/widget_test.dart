@@ -7,8 +7,7 @@ import 'package:game_irfan/game_progress.dart';
 import 'package:game_irfan/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-MissionLevel levelByNumber(int n) =>
-    kLevels.firstWhere((l) => l.number == n);
+MissionLevel levelByNumber(int n) => kLevels.firstWhere((l) => l.number == n);
 
 void main() {
   setUpAll(() {
@@ -16,7 +15,9 @@ void main() {
     // Store in-memory supaya GameProgress bisa menyimpan & muat ulang di test.
     SharedPreferences.setMockInitialValues({});
   });
-  testWidgets('AlgoCraftApp menampilkan shell utama', (WidgetTester tester) async {
+  testWidgets('AlgoCraftApp menampilkan shell utama', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const AlgoCraftApp());
 
     // Beranda memuat judul aplikasi dan navigasi bawah.
@@ -24,8 +25,9 @@ void main() {
     expect(find.text('Beranda'), findsOneWidget);
   });
 
-  testWidgets('Level 6 dan 7 tersedia di daftar level',
-      (WidgetTester tester) async {
+  testWidgets('Level 6 dan 7 tersedia di daftar level', (
+    WidgetTester tester,
+  ) async {
     expect(kLevels.length, 7);
     expect(levelByNumber(6).title, 'Dinding Pertama');
     expect(levelByNumber(7).title, 'Sisa Rumah');
@@ -48,16 +50,19 @@ void main() {
     await tester.ensureVisible(tombol);
     await tester.pump();
     await tester.tap(tombol);
-    for (var i = 0; i < 100; i++) {
+    // Animasi karakter sengaja dibuat lambat, jadi beri waktu lebih banyak.
+    for (var i = 0; i < 300; i++) {
       if (find.text('HORE! MISI BERHASIL!').evaluate().isNotEmpty) return;
       await tester.pump(const Duration(milliseconds: 200));
     }
   }
 
-  testWidgets('Level 6 selesai dengan place + ulangi_blok(4)',
-      (WidgetTester tester) async {
+  testWidgets('Level 6 selesai dengan place + ulangi_blok(4)', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
-        MaterialApp(home: ChallengeScreen(level: levelByNumber(6))));
+      MaterialApp(home: ChallengeScreen(level: levelByNumber(6))),
+    );
 
     expect(find.textContaining('repeat loop'), findsOneWidget);
 
@@ -78,10 +83,12 @@ void main() {
     expect(prog.coins, greaterThanOrEqualTo(levelByNumber(6).reward ~/ 10));
   });
 
-  testWidgets('Level 7 selesai dengan place + ulangi_blok(3)',
-      (WidgetTester tester) async {
+  testWidgets('Level 7 selesai dengan place + ulangi_blok(3)', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
-        MaterialApp(home: ChallengeScreen(level: levelByNumber(7))));
+      MaterialApp(home: ChallengeScreen(level: levelByNumber(7))),
+    );
 
     expect(find.textContaining('Bangunlah sisa rumah Anda'), findsOneWidget);
 
@@ -101,12 +108,15 @@ void main() {
 
     final prog = GameProgress.instance;
     expect(prog.starsOf(7), 3);
-    expect(prog.xp, greaterThanOrEqualTo(
-        levelByNumber(6).reward + levelByNumber(7).reward));
+    expect(
+      prog.xp,
+      greaterThanOrEqualTo(levelByNumber(6).reward + levelByNumber(7).reward),
+    );
   });
 
-  testWidgets('Progres disimpan: rekam menang, muat ulang, kunci peta',
-      (WidgetTester tester) async {
+  testWidgets('Progres disimpan: rekam menang, muat ulang, kunci peta', (
+    WidgetTester tester,
+  ) async {
     final prog = GameProgress.instance;
     prog.reset();
 
@@ -134,7 +144,8 @@ void main() {
 
     // peta level: gembok untuk level yang belum terbuka + jumlah bintang
     await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: LevelMapScreen())));
+      const MaterialApp(home: Scaffold(body: LevelMapScreen())),
+    );
     expect(find.text('Dunia 1'), findsOneWidget);
     final maxStars = kLevels.fold<int>(0, (a, l) => a + l.starTarget);
     expect(find.text('${prog.totalStars} / $maxStars'), findsOneWidget);
